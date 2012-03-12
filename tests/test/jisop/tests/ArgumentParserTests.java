@@ -37,64 +37,45 @@ public class ArgumentParserTests {
     @Test
     public void Recognizes_longform() {
         Collection<RecognizedArgument> arguments = new Build().parameter("beta").parse(new String[]{"-a", "--beta"}).recognizedArguments;
-        /*
-         * Assert.That(arguments.Count(), Is.EqualTo(1)); var arg1 =
-         * arguments.First(); Assert.That(arg1.Argument, Is.EqualTo("beta"));
-         *
-         */
-        fail();
+        assertEquals(1, arguments.size());
+        RecognizedArgument first = arguments.iterator().next();
+        assertEquals("beta",first.Argument);
     }
 
     @Test
     public void It_can_parse_parameter_value() {
         Collection<RecognizedArgument> arguments = new Build().parameter("beta").parse(new String[]{"-a", "--beta", "value"}).recognizedArguments;
-        /*
-         * Assert.That(arguments.Count(), Is.EqualTo(1)); var arg1 =
-         * arguments.First(); Assert.That(arg1.Argument, Is.EqualTo("beta"));
-         * Assert.That(arg1.Value, Is.EqualTo("value"));
-         *
-         */
-        fail();
-    }
-
-    @Test
-    public void It_can_parse_ordinalparameters() {
-        fail();
-        //ArgumentParameter o;
-        //Assert.That(OrdinalParameter.TryParse("#1first", CultureInfo.InvariantCulture, out o));
+        assertEquals(1, arguments.size());
+        RecognizedArgument first = arguments.iterator().next();
+        assertEquals("beta",first.Argument);
+        assertEquals("value",first.Value);
     }
 
     @Test
     public void It_can_parse_ordinal_parameter_value() {
         Collection<RecognizedArgument> arguments = new Build().parameter("#0first").parse(new String[]{"first"}).recognizedArguments;
-        fail();
-        /*
-         * Assert.That(arguments.Count(), Is.EqualTo(1)); var arg1 =
-         * arguments.First(); Assert.That(arg1.Argument, Is.EqualTo("first"));
-         */
+        assertEquals(1, arguments.size());
+        RecognizedArgument first = arguments.iterator().next();
+        assertEquals("first",first.Argument);
     }
 
     @Test
     public void It_can_parse_parameter_with_equals() {
         Collection<RecognizedArgument> arguments = new Build().parameter("beta=").parse(new String[]{"-a", "--beta=test", "value"}).recognizedArguments;
-        /*
-         * Assert.That(arguments.Count(), Is.EqualTo(1)); var arg1 =
-         * arguments.First(); Assert.That(arg1.Value, Is.EqualTo("test"));
-         * Assert.That(arg1.Argument, Is.EqualTo("beta"));
-         */
-        fail();
+        assertEquals(1, arguments.size());
+        RecognizedArgument first = arguments.iterator().next();
+        assertEquals("beta",first.Argument);
+        assertEquals("test",first.Value);
     }
 
     @Test
     public void It_can_parse_parameter_alias() {
         Collection<RecognizedArgument> arguments = new Build().parameter("beta|b=").parse(new String[]{"-a", "-b=test", "value"}).recognizedArguments;
-        /*
-         * Assert.That(arguments.Count(), Is.EqualTo(1)); var arg1 =
-         * arguments.First(); Assert.That(arg1.WithOptions.Argument.ToString(),
-         * Is.EqualTo("beta|b=")); Assert.That(arg1.Value, Is.EqualTo("test"));
-         * Assert.That(arg1.Argument, Is.EqualTo("b"));
-         */
-        fail();
+        assertEquals(1, arguments.size());
+        RecognizedArgument first = arguments.iterator().next();
+        assertEquals("beta|b=",first.withOptions.argument.toString());
+        assertEquals("b",first.Argument);
+        assertEquals("test",first.Value);
     }
 
     @Test
