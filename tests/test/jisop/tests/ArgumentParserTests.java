@@ -1,10 +1,7 @@
 package jisop.tests;
 
 import java.util.Collection;
-import jisop.Build;
-import jisop.ParsedArguments;
-import jisop.RecognizedArgument;
-import jisop.UnrecognizedArgument;
+import jisop.*;
 import org.junit.*;
 import static org.junit.Assert.*;
 
@@ -19,8 +16,9 @@ public class ArgumentParserTests {
 
     @Test
     public void Recognizes_shortform() {
-        ParsedArguments parser = new Build().parameter("&argument").parse(new String[]{"-a"});
-        Collection<RecognizedArgument> arguments = parser.recognizedArguments;
+        Collection<RecognizedArgument> arguments = new Build().parameter("&argument")
+                .parse(new String[]{"-a"})
+                .recognizedArguments;
         assertEquals(1, arguments.size());
         RecognizedArgument arg1 = arguments.iterator().next();
         assertEquals("&argument",arg1.withOptions.argument.toString());
@@ -28,59 +26,78 @@ public class ArgumentParserTests {
 
     @Test
     public void Given_several_arguments_Then_the_correct_one_is_recognized() {
-        Collection<RecognizedArgument> arguments = new Build().parameter("&beta").parse(new String[]{"-a", "-b"}).recognizedArguments;
+        Collection<RecognizedArgument> arguments = new Build().parameter("&beta")
+                .parse(new String[]{"-a", "-b"})
+                .recognizedArguments;
         assertEquals(1, arguments.size());
         RecognizedArgument first = arguments.iterator().next();
-        assertEquals("b",first.Argument);
+        assertEquals("b",first.argument);
     }
 
     @Test
     public void Recognizes_longform() {
-        Collection<RecognizedArgument> arguments = new Build().parameter("beta").parse(new String[]{"-a", "--beta"}).recognizedArguments;
+        Collection<RecognizedArgument> arguments = new Build().parameter("beta")
+                .parse(new String[]{"-a", "--beta"})
+                .recognizedArguments;
         assertEquals(1, arguments.size());
         RecognizedArgument first = arguments.iterator().next();
-        assertEquals("beta",first.Argument);
+        assertEquals("beta",first.argument);
     }
 
     @Test
     public void It_can_parse_parameter_value() {
-        Collection<RecognizedArgument> arguments = new Build().parameter("beta").parse(new String[]{"-a", "--beta", "value"}).recognizedArguments;
+        Collection<RecognizedArgument> arguments = new Build().parameter("beta")
+                .parse(new String[]{"-a", "--beta", "value"})
+                .recognizedArguments;
         assertEquals(1, arguments.size());
         RecognizedArgument first = arguments.iterator().next();
-        assertEquals("beta",first.Argument);
-        assertEquals("value",first.Value);
+        assertEquals("beta",first.argument);
+        assertEquals("value",first.value);
     }
-
+    @Test
+    public void It_can_parse_ordinalparameters(){
+        ArgumentParameter o=OrdinalParameter.tryParse("#1first");
+        assertNotNull(o);
+    }
     @Test
     public void It_can_parse_ordinal_parameter_value() {
-        Collection<RecognizedArgument> arguments = new Build().parameter("#0first").parse(new String[]{"first"}).recognizedArguments;
+        Collection<RecognizedArgument> arguments = new Build().parameter("#0first")
+                .parse(new String[]{"first"})
+                .recognizedArguments;
         assertEquals(1, arguments.size());
         RecognizedArgument first = arguments.iterator().next();
-        assertEquals("first",first.Argument);
+        assertEquals("first",first.argument);
     }
 
     @Test
     public void It_can_parse_parameter_with_equals() {
-        Collection<RecognizedArgument> arguments = new Build().parameter("beta=").parse(new String[]{"-a", "--beta=test", "value"}).recognizedArguments;
+        Collection<RecognizedArgument> arguments = new Build().parameter("beta=")
+                .parse(new String[]{"-a", "--beta=test", "value"})
+                .recognizedArguments;
         assertEquals(1, arguments.size());
         RecognizedArgument first = arguments.iterator().next();
-        assertEquals("beta",first.Argument);
-        assertEquals("test",first.Value);
+        assertEquals("beta",first.argument);
+        assertEquals("test",first.value);
     }
 
     @Test
     public void It_can_parse_parameter_alias() {
-        Collection<RecognizedArgument> arguments = new Build().parameter("beta|b=").parse(new String[]{"-a", "-b=test", "value"}).recognizedArguments;
+        Collection<RecognizedArgument> arguments = new Build().parameter("beta|b=")
+                .parse(new String[]{"-a", "-b=test", "value"})
+                .recognizedArguments;
+        System.out.println(arguments);
         assertEquals(1, arguments.size());
         RecognizedArgument first = arguments.iterator().next();
         assertEquals("beta|b=",first.withOptions.argument.toString());
-        assertEquals("b",first.Argument);
-        assertEquals("test",first.Value);
+        assertEquals("b",first.argument);
+        assertEquals("test",first.value);
     }
 
     @Test
     public void It_can_report_unrecognized_parameters() {
-        Collection<UnrecognizedArgument> unRecognizedArguments = new Build().parameter("beta").parse(new String[]{"-a", "value", "--beta"}).UnRecognizedArguments;
+        Collection<UnrecognizedArgument> unRecognizedArguments = new Build().parameter("beta")
+                .parse(new String[]{"-a", "value", "--beta"})
+                .unRecognizedArguments;
         /*
          * Assert.That(unRecognizedArguments, Is.EquivalentTo(new[] { new
          * UnrecognizedArgument {Index = 0,Value = "-a"}, new
@@ -91,7 +108,9 @@ public class ArgumentParserTests {
 
     @Test
     public void It_wont_report_matched_parameters() {
-        Collection<UnrecognizedArgument> arguments = new Build().parameter("beta").parse(new String[]{"--beta", "value"}).UnRecognizedArguments;
+        Collection<UnrecognizedArgument> arguments = new Build().parameter("beta")
+                .parse(new String[]{"--beta", "value"})
+                .unRecognizedArguments;
         /*
          * Assert.That(arguments.Count(), Is.EqualTo(0));
          *

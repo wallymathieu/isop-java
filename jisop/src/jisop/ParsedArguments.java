@@ -22,15 +22,15 @@ public class ParsedArguments {
             Collection<UnrecognizedArgument> UnRecognizedArguments) {
         this.ArgumentWithOptions= ArgumentWithOptions;
         this.recognizedArguments = recognizedArguments;
-        this.UnRecognizedArguments = UnRecognizedArguments;
+        this.unRecognizedArguments = UnRecognizedArguments;
     }
     public ParsedArguments(ParsedArguments parsedArguments) {
         recognizedArguments = parsedArguments.recognizedArguments;
         ArgumentWithOptions = parsedArguments.ArgumentWithOptions;
-        UnRecognizedArguments = parsedArguments.UnRecognizedArguments;
+        unRecognizedArguments = parsedArguments.unRecognizedArguments;
     }
     public List<RecognizedArgument> recognizedArguments;
-    public Collection<UnrecognizedArgument> UnRecognizedArguments;
+    public Collection<UnrecognizedArgument> unRecognizedArguments;
     public List<ArgumentWithOptions> ArgumentWithOptions;
 
     public Collection<ArgumentWithOptions> UnMatchedRequiredArguments() {

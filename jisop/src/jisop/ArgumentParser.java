@@ -26,12 +26,18 @@ public class ArgumentParser {
         }
         return null;
     }
-    private Collection<UnrecognizedArgument> unrecoqnizedArguments(String[] arguments, LinkedList<Integer> recognizedIndexes){
-        return null;
+
+    private Collection<UnrecognizedArgument> unrecoqnizedArguments(String[] arguments, LinkedList<Integer> recognizedIndexes) {
+        LinkedList<UnrecognizedArgument> unrecognized = new LinkedList<UnrecognizedArgument>();
+        for (int i = 0; i < arguments.length; i++) {
+            if (!recognizedIndexes.contains(i))
+                unrecognized.add(new UnrecognizedArgument(i,arguments[i]));
+        }
+        return unrecognized;
 //        .Select((value, i) => 
-  //               new {i, value }) .Where(indexAndValue =>
-    //                !recognizedIndexes.Contains(indexAndValue.i)) .Select(v => new
-      //    UnrecognizedArgument { Index = v.i, Value = v.value })
+        //               new {i, value }) .Where(indexAndValue =>
+        //                !recognizedIndexes.Contains(indexAndValue.i)) .Select(v => new
+        //    UnrecognizedArgument { Index = v.i, Value = v.value })
     }
 
     public ParsedArguments Parse(String[] arguments) {
@@ -64,31 +70,33 @@ public class ArgumentParser {
                             argumentWithOptionsThatAccepts(current.Index, current.Value);
                     if (null == argumentWithOptions) {
                         continue;
-                    }
+                    } else {
 
-                    recognizedIndexes.add(current.Index);
-                    recognized.add(new RecognizedArgument(argumentWithOptions, current.Value));
+                        recognizedIndexes.add(current.Index);
+                        recognized.add(new RecognizedArgument(argumentWithOptions, current.Value));
+                    }
                 }
-                //break;
+                break;
                 case Parameter: {
                     ArgumentWithOptions argumentWithOptions =
                             argumentWithOptionsThatAccepts(current.Index, current.Value);
                     if (null == argumentWithOptions) {
                         continue;
-                    }
-                    String value;
-                    recognizedIndexes.add(current.Index);
-                    if (lexer.peekNext()!=null && lexer.peekNext().TokenType == TokenType.ParameterValue) {
-                        Token paramValue = lexer.next();
-                        recognizedIndexes.add(paramValue.Index);
-                        value = paramValue.Value;
                     } else {
-                        value = "";
-                    }
+                        String value;
+                        recognizedIndexes.add(current.Index);
+                        if (lexer.peekNext() != null && lexer.peekNext().TokenType == TokenType.ParameterValue) {
+                            Token paramValue = lexer.next();
+                            recognizedIndexes.add(paramValue.Index);
+                            value = paramValue.Value;
+                        } else {
+                            value = "";
+                        }
 
-                    recognized.add(new RecognizedArgument(argumentWithOptions, current.Value, value));
+                        recognized.add(new RecognizedArgument(argumentWithOptions, current.Value, value));
+                    }
                 }
-                //break;
+                break;
                 case ParameterValue:
                     break;
                 default:
@@ -96,11 +104,11 @@ public class ArgumentParser {
             }
         }
 
-        
-         Collection<UnrecognizedArgument> unRecognizedArguments = unrecoqnizedArguments(arguments,recognizedIndexes);
-         
-          return new ParsedArguments (_argumentWithOptions,
-                  recognized,
-                  unRecognizedArguments);
+
+        Collection<UnrecognizedArgument> unRecognizedArguments = unrecoqnizedArguments(arguments, recognizedIndexes);
+
+        return new ParsedArguments(_argumentWithOptions,
+                recognized,
+                unRecognizedArguments);
     }
 }

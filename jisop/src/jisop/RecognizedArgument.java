@@ -9,12 +9,12 @@ public class RecognizedArgument {
     /// the matched value if any, for instance the "value" of the expression "--argument value"
     /// </summary>
 
-    public final String Value;
+    public final String value;
     public final ArgumentWithOptions withOptions;
     /// <summary>
     /// the "argument" of the expression "--argument"
     /// </summary>
-    public final String Argument;
+    public final String argument;
 
     public RecognizedArgument(ArgumentWithOptions argumentWithOptions,
             String parameter) {
@@ -23,17 +23,17 @@ public class RecognizedArgument {
 
     public RecognizedArgument(ArgumentWithOptions argumentWithOptions,
             String parameter, String value) {
-        Value = value;
+        this.value = value;
         withOptions = argumentWithOptions;
-        Argument = parameter;
+        argument = parameter;
     }
 
     @Override
     public int hashCode() {
         int hash = 7;
-        hash = 79 * hash + Objects.hashCode(this.Value);
+        hash = 79 * hash + Objects.hashCode(this.value);
         hash = 79 * hash + Objects.hashCode(this.withOptions);
-        hash = 79 * hash + Objects.hashCode(this.Argument);
+        hash = 79 * hash + Objects.hashCode(this.argument);
         return hash;
     }
 
@@ -46,15 +46,18 @@ public class RecognizedArgument {
             return false;
         }
         final RecognizedArgument other = (RecognizedArgument) obj;
-        if (!Objects.equals(this.Value, other.Value)) {
+        if (!Objects.equals(this.value, other.value)) {
             return false;
         }
         if (!Objects.equals(this.withOptions, other.withOptions)) {
             return false;
         }
-        if (!Objects.equals(this.Argument, other.Argument)) {
+        if (!Objects.equals(this.argument, other.argument)) {
             return false;
         }
         return true;
+    }
+    public String toString(){
+        return String.format("%1s: %2s", this.argument,this.value);
     }
 }
