@@ -16,7 +16,7 @@ public class ArgumentParser {
         }
         public ParsedArguments Parse(String[] arguments)
         {
-            ArgumentLexer lexer = ArgumentLexer.Lex(arguments);
+            ArgumentLexer lexer = ArgumentLexer.lex(arguments);
             ParsedArguments parsedArguments = Parse(lexer, arguments);
             Collection<ArgumentWithOptions> unMatchedRequiredArguments = parsedArguments.UnMatchedRequiredArguments();
 
@@ -45,6 +45,7 @@ public class ArgumentParser {
                 {
                     case Argument:
                         {
+                            
                          /*   var argumentWithOptions = _argumentWithOptions
                                .SingleOrDefault(argopt => argopt.Argument.Accept(current.Index,current.Value));
                             

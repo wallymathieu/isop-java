@@ -9,18 +9,18 @@ package jisop;
 public class ArgumentWithOptions {
 
     public final String Description;
-    public final ArgumentParameter Argument;
+    public final ArgumentParameter argument;
     //public final Action<string> Action { get; set; }
     public final boolean Required;
 
     public ArgumentWithOptions(ArgumentParameter argument, boolean required, String description) {
         Description = description;
-        Argument = argument;
+        this.argument = argument;
         Required = required;
     }
 
     public String help() {
-        return Argument.help()
+        return argument.help()
                 + (StringUtils.isNullOrEmpty(Description)
                 ? ""
                 : "\t" + Description);
@@ -30,7 +30,7 @@ public class ArgumentWithOptions {
     public int hashCode() {
         int hash = 3;
         hash = 41 * hash + Objects.hashCode(this.Description);
-        hash = 41 * hash + Objects.hashCode(this.Argument);
+        hash = 41 * hash + Objects.hashCode(this.argument);
         hash = 41 * hash + (this.Required ? 1 : 0);
         return hash;
     }
@@ -47,7 +47,7 @@ public class ArgumentWithOptions {
         if (!Objects.equals(this.Description, other.Description)) {
             return false;
         }
-        if (!Objects.equals(this.Argument, other.Argument)) {
+        if (!Objects.equals(this.argument, other.argument)) {
             return false;
         }
         if (this.Required != other.Required) {

@@ -19,14 +19,14 @@ public class ArgumentParameter {
     public final String Prototype;
     public final Integer Ordinal;
 
-    public static ArgumentParameter Parse(String value) {
-        ArgumentParameter ordinalParameter=OrdinalParameter.TryParse(value);
+    public static ArgumentParameter parse(String value) {
+        ArgumentParameter ordinalParameter=OrdinalParameter.tryParse(value);
         if (ordinalParameter!=null)
                 return ordinalParameter;
-        ArgumentParameter optionParameter=OptionParameter.TryParse(value);
+        ArgumentParameter optionParameter=OptionParameter.tryParse(value);
         if (optionParameter!=null)
                 return optionParameter;
-        ArgumentParameter visualStudioParameter=VisualStudioParameter.TryParse(value);
+        ArgumentParameter visualStudioParameter=VisualStudioParameter.tryParse(value);
         if (visualStudioParameter!=null)
                 return visualStudioParameter;
         throw new RuntimeException("failed to parse "+value);

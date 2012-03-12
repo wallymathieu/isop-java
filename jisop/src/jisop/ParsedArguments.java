@@ -17,11 +17,11 @@ public class ParsedArguments {
     /// <param name="parsedArguments"></param>
 
     public ParsedArguments(ParsedArguments parsedArguments) {
-        RecognizedArguments = parsedArguments.RecognizedArguments;
+        recognizedArguments = parsedArguments.recognizedArguments;
         ArgumentWithOptions = parsedArguments.ArgumentWithOptions;
         UnRecognizedArguments = parsedArguments.UnRecognizedArguments;
     }
-    public Collection<RecognizedArgument> RecognizedArguments;
+    public Collection<RecognizedArgument> recognizedArguments;
     public Collection<UnrecognizedArgument> UnRecognizedArguments;
     public Collection<ArgumentWithOptions> ArgumentWithOptions;
 

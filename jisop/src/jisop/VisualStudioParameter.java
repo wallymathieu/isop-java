@@ -15,7 +15,7 @@ class VisualStudioParameter {
         public static final Pattern VisualStudioArgPattern = 
                 Pattern.compile("(\\&?)(.)[^=:]*([=:]?)");
 
-        public static ArgumentParameter TryParse(String value)
+        public static ArgumentParameter tryParse(String value)
         {
             //TODO: need to do some cleaning here
             Matcher match = VisualStudioArgPattern.matcher(value);

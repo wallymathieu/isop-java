@@ -21,7 +21,7 @@ public class ArgumentLexer extends LinkedList<Token> {
         super(tokens);
     }
 
-    public static ArgumentLexer Lex(String[] arg) {
+    public static ArgumentLexer lex(String[] arg) {
         ArgumentLexer retval = new ArgumentLexer();
         int currentIndex = 0;
         int length = arg.length;

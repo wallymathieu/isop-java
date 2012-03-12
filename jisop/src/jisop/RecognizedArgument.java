@@ -10,7 +10,7 @@ public class RecognizedArgument {
     /// </summary>
 
     public final String Value;
-    public final ArgumentWithOptions WithOptions;
+    public final ArgumentWithOptions withOptions;
     /// <summary>
     /// the "argument" of the expression "--argument"
     /// </summary>
@@ -24,7 +24,7 @@ public class RecognizedArgument {
     public RecognizedArgument(ArgumentWithOptions argumentWithOptions,
             String parameter, String value) {
         Value = value;
-        WithOptions = argumentWithOptions;
+        withOptions = argumentWithOptions;
         Argument = parameter;
     }
 
@@ -32,7 +32,7 @@ public class RecognizedArgument {
     public int hashCode() {
         int hash = 7;
         hash = 79 * hash + Objects.hashCode(this.Value);
-        hash = 79 * hash + Objects.hashCode(this.WithOptions);
+        hash = 79 * hash + Objects.hashCode(this.withOptions);
         hash = 79 * hash + Objects.hashCode(this.Argument);
         return hash;
     }
@@ -49,7 +49,7 @@ public class RecognizedArgument {
         if (!Objects.equals(this.Value, other.Value)) {
             return false;
         }
-        if (!Objects.equals(this.WithOptions, other.WithOptions)) {
+        if (!Objects.equals(this.withOptions, other.withOptions)) {
             return false;
         }
         if (!Objects.equals(this.Argument, other.Argument)) {

@@ -5,7 +5,7 @@ package jisop;
  * @author mathieu
  */
 class OptionParameter {
-       public static  ArgumentParameter TryParse(String value)
+       public static  ArgumentParameter tryParse(String value)
         {
             if (value.contains("|"))
             {

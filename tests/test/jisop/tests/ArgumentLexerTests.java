@@ -22,7 +22,7 @@ public class ArgumentLexerTests {
 
     @Test
     public void It_can_tokenize_simple_argument() {
-        ArgumentLexer lexer = ArgumentLexer.Lex(new String[]{"argument"});
+        ArgumentLexer lexer = ArgumentLexer.lex(new String[]{"argument"});
         assertArrayEquals(new Token[]{
                     new Token("argument", TokenType.Argument, 0)},
                 lexer.toArray());
@@ -30,7 +30,7 @@ public class ArgumentLexerTests {
 
     @Test
     public void It_can_tokenize_parameter() {
-        ArgumentLexer lexer = ArgumentLexer.Lex(new String[]{"--parameter"});
+        ArgumentLexer lexer = ArgumentLexer.lex(new String[]{"--parameter"});
 
         assertArrayEquals(new Token[]{
                     new Token("parameter", TokenType.Parameter, 0)},
@@ -39,7 +39,7 @@ public class ArgumentLexerTests {
 
     @Test
     public void It_can_tokenize_parameter2() {
-        ArgumentLexer lexer = ArgumentLexer.Lex(new String[]{"/parameter"});
+        ArgumentLexer lexer = ArgumentLexer.lex(new String[]{"/parameter"});
         assertArrayEquals(new Token[]{
                     new Token("parameter", TokenType.Parameter, 0)},
                 lexer.toArray());
@@ -47,7 +47,7 @@ public class ArgumentLexerTests {
 
     @Test
     public void It_can_tokenize_parametervalue() {
-        ArgumentLexer lexer = ArgumentLexer.Lex(new String[]{"--parameter", "parametervalue"});
+        ArgumentLexer lexer = ArgumentLexer.lex(new String[]{"--parameter", "parametervalue"});
         assertArrayEquals(new Token[]{
                     new Token("parameter", TokenType.Parameter, 0),
                     new Token("parametervalue", TokenType.ParameterValue, 1)},
@@ -56,7 +56,7 @@ public class ArgumentLexerTests {
 
     @Test
     public void It_can_tokenize_parametervalue2() {
-        ArgumentLexer lexer = ArgumentLexer.Lex(new String[]{"--parameter=parametervalue"});
+        ArgumentLexer lexer = ArgumentLexer.lex(new String[]{"--parameter=parametervalue"});
         assertArrayEquals(new Token[]{
                     new Token("parameter", TokenType.Parameter, 0),
                     new Token("parametervalue", TokenType.ParameterValue, 1)},
@@ -67,7 +67,7 @@ public class ArgumentLexerTests {
     @Test
     public void It_can_peek_tokenized_value() {
 
-        PeekCollection<Token> lexer = new PeekCollection<Token>(ArgumentLexer.Lex(new String[]{
+        PeekCollection<Token> lexer = new PeekCollection<Token>(ArgumentLexer.lex(new String[]{
                     "--parameter=parametervalue", "argument"}));
         lexer.next();
         Token first = lexer.peekNext();

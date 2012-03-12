@@ -19,23 +19,23 @@ public class Build {
             _controllerRecognizers = new LinkedList<ControllerRecognizer>();
             _argumentRecognizers = new LinkedList<ArgumentWithOptions>();
         }
-public Build Parameter(String argument)
+public Build parameter(String argument)
 {
     return Parameter(argument,false,null);
 }
         
         public Build Parameter(String argument, boolean required, String description)
         {
-            _argumentRecognizers.add(new ArgumentWithOptions(ArgumentParameter.Parse(argument), 
+            _argumentRecognizers.add(new ArgumentWithOptions(ArgumentParameter.parse(argument), 
                     required, description));
             return this;
         }
 		
-        public ParsedArguments Parse(String[] arg)
+        public ParsedArguments parse(String[] arg)
         {
             ArgumentParser argumentParser = new ArgumentParser(_argumentRecognizers);
             // TODO: Need to figure out where this goes. To Much logic for this layer.
-            ArgumentLexer lexer = ArgumentLexer.Lex(arg);
+            ArgumentLexer lexer = ArgumentLexer.lex(arg);
             ParsedArguments parsedArguments = argumentParser.Parse(lexer, arg);
             if (_controllerRecognizers.size()>0)
             {

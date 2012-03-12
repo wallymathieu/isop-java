@@ -19,20 +19,16 @@ public class ArgumentParserTests {
 
     @Test
     public void Recognizes_shortform() {
-        ParsedArguments parser = new Build().Parameter("&argument").Parse(new String[]{"-a"});
-        Collection<RecognizedArgument> arguments = parser.RecognizedArguments;
-        /*
-         * Assert.That(arguments.size(), Is.EqualTo(1)); var arg1 =
-         * arguments.First(); Assert.That(arg1.WithOptions.Argument.ToString(),
-         * Is.EqualTo("&argument"));
-         *
-         */
-        Assert.fail();
+        ParsedArguments parser = new Build().parameter("&argument").parse(new String[]{"-a"});
+        Collection<RecognizedArgument> arguments = parser.recognizedArguments;
+        assertEquals(1, arguments.size());
+        RecognizedArgument arg1 = arguments.iterator().next();
+        assertEquals("&argument",arg1.withOptions.argument.toString());
     }
 
     @Test
     public void Given_several_arguments_Then_the_correct_one_is_recognized() {
-        Collection<RecognizedArgument> arguments = new Build().Parameter("&beta").Parse(new String[]{"-a", "-b"}).RecognizedArguments;
+        Collection<RecognizedArgument> arguments = new Build().parameter("&beta").parse(new String[]{"-a", "-b"}).recognizedArguments;
         /*
          * Assert.That(arguments.Count(), Is.EqualTo(1)); var arg1 =
          * arguments.First(); Assert.That(arg1.Argument, Is.EqualTo("b"));
@@ -43,7 +39,7 @@ public class ArgumentParserTests {
 
     @Test
     public void Recognizes_longform() {
-        Collection<RecognizedArgument> arguments = new Build().Parameter("beta").Parse(new String[]{"-a", "--beta"}).RecognizedArguments;
+        Collection<RecognizedArgument> arguments = new Build().parameter("beta").parse(new String[]{"-a", "--beta"}).recognizedArguments;
         /*
          * Assert.That(arguments.Count(), Is.EqualTo(1)); var arg1 =
          * arguments.First(); Assert.That(arg1.Argument, Is.EqualTo("beta"));
@@ -54,7 +50,7 @@ public class ArgumentParserTests {
 
     @Test
     public void It_can_parse_parameter_value() {
-        Collection<RecognizedArgument> arguments = new Build().Parameter("beta").Parse(new String[]{"-a", "--beta", "value"}).RecognizedArguments;
+        Collection<RecognizedArgument> arguments = new Build().parameter("beta").parse(new String[]{"-a", "--beta", "value"}).recognizedArguments;
         /*
          * Assert.That(arguments.Count(), Is.EqualTo(1)); var arg1 =
          * arguments.First(); Assert.That(arg1.Argument, Is.EqualTo("beta"));
@@ -73,7 +69,7 @@ public class ArgumentParserTests {
 
     @Test
     public void It_can_parse_ordinal_parameter_value() {
-        Collection<RecognizedArgument> arguments = new Build().Parameter("#0first").Parse(new String[]{"first"}).RecognizedArguments;
+        Collection<RecognizedArgument> arguments = new Build().parameter("#0first").parse(new String[]{"first"}).recognizedArguments;
         fail();
         /*
          * Assert.That(arguments.Count(), Is.EqualTo(1)); var arg1 =
@@ -83,7 +79,7 @@ public class ArgumentParserTests {
 
     @Test
     public void It_can_parse_parameter_with_equals() {
-        Collection<RecognizedArgument> arguments = new Build().Parameter("beta=").Parse(new String[]{"-a", "--beta=test", "value"}).RecognizedArguments;
+        Collection<RecognizedArgument> arguments = new Build().parameter("beta=").parse(new String[]{"-a", "--beta=test", "value"}).recognizedArguments;
         /*
          * Assert.That(arguments.Count(), Is.EqualTo(1)); var arg1 =
          * arguments.First(); Assert.That(arg1.Value, Is.EqualTo("test"));
@@ -94,7 +90,7 @@ public class ArgumentParserTests {
 
     @Test
     public void It_can_parse_parameter_alias() {
-        Collection<RecognizedArgument> arguments = new Build().Parameter("beta|b=").Parse(new String[]{"-a", "-b=test", "value"}).RecognizedArguments;
+        Collection<RecognizedArgument> arguments = new Build().parameter("beta|b=").parse(new String[]{"-a", "-b=test", "value"}).recognizedArguments;
         /*
          * Assert.That(arguments.Count(), Is.EqualTo(1)); var arg1 =
          * arguments.First(); Assert.That(arg1.WithOptions.Argument.ToString(),
@@ -106,7 +102,7 @@ public class ArgumentParserTests {
 
     @Test
     public void It_can_report_unrecognized_parameters() {
-        Collection<UnrecognizedArgument> unRecognizedArguments = new Build().Parameter("beta").Parse(new String[]{"-a", "value", "--beta"}).UnRecognizedArguments;
+        Collection<UnrecognizedArgument> unRecognizedArguments = new Build().parameter("beta").parse(new String[]{"-a", "value", "--beta"}).UnRecognizedArguments;
         /*
          * Assert.That(unRecognizedArguments, Is.EquivalentTo(new[] { new
          * UnrecognizedArgument {Index = 0,Value = "-a"}, new
@@ -117,7 +113,7 @@ public class ArgumentParserTests {
 
     @Test
     public void It_wont_report_matched_parameters() {
-        Collection<UnrecognizedArgument> arguments = new Build().Parameter("beta").Parse(new String[]{"--beta", "value"}).UnRecognizedArguments;
+        Collection<UnrecognizedArgument> arguments = new Build().parameter("beta").parse(new String[]{"--beta", "value"}).UnRecognizedArguments;
         /*
          * Assert.That(arguments.Count(), Is.EqualTo(0));
          *
@@ -137,7 +133,7 @@ public class ArgumentParserTests {
 
     @Test
     public void It_can_recognize_arguments() {
-        Collection<RecognizedArgument> arguments = new Build().Parameter("alpha").Parse(new String[]{"alpha"}).RecognizedArguments;
+        Collection<RecognizedArgument> arguments = new Build().parameter("alpha").parse(new String[]{"alpha"}).recognizedArguments;
         /*
          * Assert.That(arguments.Count(), Is.EqualTo(1)); var arg1 =
          * arguments.First(); Assert.That(arg1.WithOptions.Argument.ToString(),
@@ -212,7 +208,7 @@ public class ArgumentParserTests {
          */
         ParsedArguments arguments = new Build().Recognize(MyController.class) //.Parameter("beta", arg => countArg++)
                 //.SetFactory(factory)
-                .Parse(new String[]{"My", "Action", "--param2", "value2", "--param3", "3", "--param1", "value1", "--param4", "3.4", "--beta"});
+                .parse(new String[]{"My", "Action", "--param2", "value2", "--param3", "3", "--param1", "value1", "--param4", "3.4", "--beta"});
 
         /*
          * Assert.That(arguments.UnRecognizedArguments.Count(), Is.EqualTo(0));
@@ -234,7 +230,7 @@ public class ArgumentParserTests {
          */
 
         ParsedArguments arguments = new Build().Recognize(WithIndexController.class) //.SetFactory(factory)
-                .Parse(new String[]{"WithIndex", /*
+                .parse(new String[]{"WithIndex", /*
                      * "Index",
                      */ "--param2", "value2", "--param3", "3", "--param1", "value1", "--param4", "3.4"});
         /*
@@ -264,7 +260,7 @@ public class ArgumentParserTests {
 
         new Build() //                .Parameter("beta", arg => count++)
                 //              .Parameter("alpha", arg => Assert.Fail())
-                .Parse(new String[]{"-a", "value", "--beta"}).Invoke(System.out);
+                .parse(new String[]{"-a", "value", "--beta"}).Invoke(System.out);
         fail();
         //Assert.That(count, Is.EqualTo(1));
     }
@@ -281,7 +277,7 @@ public class ArgumentParserTests {
          */
 
         ParsedArguments arguments = new Build().Recognize(EnumerableController.class) //.SetFactory(factory)
-                .Parse(new String[]{"Enumerable", "Return"});
+                .parse(new String[]{"Enumerable", "Return"});
 
         /*
          * Assert.That(arguments.UnRecognizedArguments.Count(), Is.EqualTo(0));
