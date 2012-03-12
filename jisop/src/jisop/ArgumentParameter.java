@@ -51,7 +51,7 @@ public class ArgumentParameter {
     }
 
     public boolean accept(int index, String val) {
-        if (Ordinal!=null) {
+        if (Ordinal==null) {
             return hasAlias(val);
         } else {
             return Ordinal.intValue() == index && hasAlias(val);

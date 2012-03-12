@@ -2,6 +2,7 @@ package jisop;
 
 import java.util.Collection;
 import java.util.LinkedList;
+import java.util.List;
 
 /**
  *
@@ -9,8 +10,8 @@ import java.util.LinkedList;
  */
 public class Build {
 
-     private final Collection<ArgumentWithOptions> _argumentRecognizers;
-     private final Collection<ControllerRecognizer> _controllerRecognizers;
+     private final List<ArgumentWithOptions> _argumentRecognizers;
+     private final List<ControllerRecognizer> _controllerRecognizers;
      //public TypeConverterFunc TypeConverter { get; private set; }
         private final TypeContainer _container=new TypeContainer();
         

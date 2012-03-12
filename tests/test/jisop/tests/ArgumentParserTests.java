@@ -29,12 +29,9 @@ public class ArgumentParserTests {
     @Test
     public void Given_several_arguments_Then_the_correct_one_is_recognized() {
         Collection<RecognizedArgument> arguments = new Build().parameter("&beta").parse(new String[]{"-a", "-b"}).recognizedArguments;
-        /*
-         * Assert.That(arguments.Count(), Is.EqualTo(1)); var arg1 =
-         * arguments.First(); Assert.That(arg1.Argument, Is.EqualTo("b"));
-         *
-         */
-        fail();
+        assertEquals(1, arguments.size());
+        RecognizedArgument first = arguments.iterator().next();
+        assertEquals("b",first.Argument);
     }
 
     @Test
