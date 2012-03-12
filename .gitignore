@@ -1,0 +1,13 @@
+
+syntax: glob
+*.class
+*.*~
+*.*.swp
+syntax: regexp
+/[^/]*/nbproject/private/
+ 
+build/
+nbbuild/
+dist/
+nbactions.xml
+nb-configuration.xml
