@@ -9,7 +9,7 @@ import jisop.PeekCollection;
 import jisop.Token;
 import jisop.TokenType;
 import org.junit.*;
-
+import static org.junit.Assert.*;
 /**
  *
  * @author mathieu
@@ -19,29 +19,11 @@ public class ArgumentLexerTests {
     public ArgumentLexerTests() {
     }
 
-    @BeforeClass
-    public static void setUpClass() throws Exception {
-    }
-
-    @AfterClass
-    public static void tearDownClass() throws Exception {
-    }
-
-    @Before
-    public void setUp() {
-    }
-
-    @After
-    public void tearDown() {
-    }
-    // TODO add test methods here.
-    // The methods must be annotated with annotation @Test. For example:
-    //
 
     @Test
     public void It_can_tokenize_simple_argument() {
         ArgumentLexer lexer = ArgumentLexer.Lex(new String[]{"argument"});
-        Assert.assertArrayEquals(new Token[]{
+        assertArrayEquals(new Token[]{
                     new Token("argument", TokenType.Argument, 0)},
                 lexer.toArray());
     }
@@ -50,7 +32,7 @@ public class ArgumentLexerTests {
     public void It_can_tokenize_parameter() {
         ArgumentLexer lexer = ArgumentLexer.Lex(new String[]{"--parameter"});
 
-        Assert.assertArrayEquals(new Token[]{
+        assertArrayEquals(new Token[]{
                     new Token("parameter", TokenType.Parameter, 0)},
                 lexer.toArray());
     }
@@ -58,7 +40,7 @@ public class ArgumentLexerTests {
     @Test
     public void It_can_tokenize_parameter2() {
         ArgumentLexer lexer = ArgumentLexer.Lex(new String[]{"/parameter"});
-        Assert.assertArrayEquals(new Token[]{
+        assertArrayEquals(new Token[]{
                     new Token("parameter", TokenType.Parameter, 0)},
                 lexer.toArray());
     }
@@ -66,7 +48,7 @@ public class ArgumentLexerTests {
     @Test
     public void It_can_tokenize_parametervalue() {
         ArgumentLexer lexer = ArgumentLexer.Lex(new String[]{"--parameter", "parametervalue"});
-        Assert.assertArrayEquals(new Token[]{
+        assertArrayEquals(new Token[]{
                     new Token("parameter", TokenType.Parameter, 0),
                     new Token("parametervalue", TokenType.ParameterValue, 1)},
                 lexer.toArray());
@@ -75,7 +57,7 @@ public class ArgumentLexerTests {
     @Test
     public void It_can_tokenize_parametervalue2() {
         ArgumentLexer lexer = ArgumentLexer.Lex(new String[]{"--parameter=parametervalue"});
-        Assert.assertArrayEquals(new Token[]{
+        assertArrayEquals(new Token[]{
                     new Token("parameter", TokenType.Parameter, 0),
                     new Token("parametervalue", TokenType.ParameterValue, 1)},
                 lexer.toArray());
@@ -89,12 +71,12 @@ public class ArgumentLexerTests {
                     "--parameter=parametervalue", "argument"}));
         lexer.next();
         Token first = lexer.peekNext();
-        Assert.assertEquals(new Token("parametervalue", TokenType.ParameterValue, 1),
+        assertEquals(new Token("parametervalue", TokenType.ParameterValue, 1),
                 first);
 
-        Assert.assertEquals(first,
+        assertEquals(first,
                 lexer.next());
-        Assert.assertEquals(new Token("argument",
+        assertEquals(new Token("argument",
                 TokenType.Argument, 2),
                 lexer.peekNext());
     }
