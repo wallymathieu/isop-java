@@ -12,7 +12,7 @@ import java.util.regex.Pattern;
 public class ArgumentLexer extends LinkedList<Token> {
 
     private static final Pattern ParamPattern =
-            Pattern.compile("(?<paramPrefix>--|/|-)(?<param>[^:=]*)([:=]?)(?<paramValue>.*)");
+            Pattern.compile("(--|/|-)([^:=]*)([:=]?)(.*)");
 
     private ArgumentLexer() {
     }
@@ -32,9 +32,9 @@ public class ArgumentLexer extends LinkedList<Token> {
 
             Matcher match = ParamPattern.matcher(value);
             if (match.matches()) {
-                retval.add(new Token(match.group("param"), TokenType.Parameter, valueIndex));
-                if (match.group("paramValue").length() > 0) {
-                    retval.add(new Token(match.group("paramValue"), TokenType.ParameterValue, valueIndex));
+                retval.add(new Token(match.group(2), TokenType.Parameter, valueIndex));
+                if (match.group(4).length() > 0) {
+                    retval.add(new Token(match.group(4), TokenType.ParameterValue, valueIndex));
                 } else {
                     if (currentIndex < length) {
                         String possibleParamValue = arg[currentIndex];

@@ -11,3 +11,5 @@ nbbuild/
 dist/
 nbactions.xml
 nb-configuration.xml
+/jisop/nbproject/private/
+/tests/nbproject/private/

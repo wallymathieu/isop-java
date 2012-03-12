@@ -4,8 +4,6 @@
  */
 package jisop;
 
-import java.util.Objects;
-
 /**
  *
  * @author mathieu

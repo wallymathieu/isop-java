@@ -1,6 +1,5 @@
 package jisop;
 
-import java.util.Objects;
 
 /**
  *
@@ -35,7 +34,7 @@ public class Token {
     @Override
     public int hashCode() {
         int hash = 3;
-        hash = 79 * hash + Objects.hashCode(this.Value);
+        hash = 79 * hash + this.Value.hashCode();
         hash = 79 * hash + (this.TokenType != null ? this.TokenType.hashCode() : 0);
         return hash;
     }
@@ -48,6 +47,6 @@ public class Token {
     }
     @Override
     public String toString(){
-        return String.format("%1:%2", TokenType, Value);
+        return String.format("%1s: '%2s'", TokenType.toString(), Value.toString());
     }
 }

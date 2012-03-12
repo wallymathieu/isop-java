@@ -13,7 +13,7 @@ class VisualStudioParameter {
         /// same pattern as in visual studio external tools: &amp;tool
         /// </summary>
         public static final Pattern VisualStudioArgPattern = 
-                Pattern.compile("(?<prefix>\\&?)(?<alias>.)[^=:]*(?<equals>[=:]?)");
+                Pattern.compile("(\\&?)(.)[^=:]*([=:]?)");
 
         public static ArgumentParameter TryParse(String value)
         {
@@ -23,20 +23,20 @@ class VisualStudioParameter {
             {
                 LinkedList<String> aliases = new LinkedList<String>();
                 String val;
-                if (match.group("prefix").length() > 0)
+                if (match.group(1).length() > 0)
                 {
                     val = value.replace("&", "");
-                    if (match.group("alias").length() > 0)
-                        aliases.add(match.group("alias"));
+                    if (match.group(2).length() > 0)
+                        aliases.add(match.group(2));
                 }
                 else
                 {
                     val = value;
                 }
                 String delimiter;
-                if (match.group("equals").length() > 0)
+                if (match.group(3).length() > 0)
                 {
-                    delimiter = match.group("equals");
+                    delimiter = match.group(3);
                     val = val.replace(delimiter, "");
                 }
                 else delimiter = null;

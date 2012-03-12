@@ -4,8 +4,6 @@
  */
 package jisop;
 
-import java.util.Objects;
-
 /**
  * class to enable extensions of the behavior of what is recognized as
  * arguments.

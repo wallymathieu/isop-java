@@ -13,10 +13,10 @@ class OptionParameter {
                 String[] names = StringUtils.trimEnd( prototype, "=:").split("|");
                 String delimiter = null;
                 String last = prototype.substring(prototype.length()-2, prototype.length()-1);
-                switch (last)
+                switch (last.charAt(0))
                 {
-                    case "=":
-                    case ":":
+                    case '=':
+                    case ':':
                         delimiter = last;
                         break;
                     default:
