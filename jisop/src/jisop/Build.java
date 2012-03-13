@@ -10,107 +10,113 @@ import java.util.List;
  */
 public class Build {
 
-     private final List<ArgumentWithOptions> _argumentRecognizers;
-     private final List<ControllerRecognizer> _controllerRecognizers;
-     //public TypeConverterFunc TypeConverter { get; private set; }
-        private final TypeContainer _container=new TypeContainer();
-        
-        public Build()
-        {
-            _controllerRecognizers = new LinkedList<ControllerRecognizer>();
-            _argumentRecognizers = new LinkedList<ArgumentWithOptions>();
-        }
-public Build parameter(String argument)
-{
-    return Parameter(argument,false,null);
-}
-        
-        public Build Parameter(String argument, boolean required, String description)
-        {
-            _argumentRecognizers.add(new ArgumentWithOptions(ArgumentParameter.parse(argument), 
-                    required, description));
-            return this;
-        }
-		
-        public ParsedArguments parse(String[] arg)
-        {
-            ArgumentParser argumentParser = new ArgumentParser(_argumentRecognizers);
-            // TODO: Need to figure out where this goes. To Much logic for this layer.
-            ArgumentLexer lexer = ArgumentLexer.lex(arg);
-            ParsedArguments parsedArguments = argumentParser.Parse(lexer, arg);
-            if (_controllerRecognizers.size()>0)
-            {
-                throw new RuntimeException("not implemented");
-                /*
-                var controllerRecognizer = 
-                        _controllerRecognizers.FirstOrDefault(recognizer => recognizer.Recognize(arg));
-                if (null != controllerRecognizer)
-                {
-					var parsedMethod = controllerRecognizer.Parse(arg);
-					parsedMethod.Factory = _container.CreateInstance;
-                    var merged = parsedArguments.Merge( parsedMethod);
-                    if (!controllerRecognizer.IgnoreGlobalUnMatchedParameters)
-                        FailOnUnMatched(merged);
-                    return merged;
-                }*/
-            }
-            FailOnUnMatched(parsedArguments);
-            return parsedArguments;
-        }
+    private final List<ArgumentWithOptions> _argumentRecognizers;
+    private final List<ControllerRecognizer> _controllerRecognizers;
+    private TypeConverter typeConverter;
+    private final TypeContainer _container = new TypeContainer();
 
-        private static void FailOnUnMatched(ParsedArguments parsedArguments)
-        { // This does not belong here. This is just supposed to be a fluent layer.
-            Collection<ArgumentWithOptions> unMatchedRequiredArguments = parsedArguments.UnMatchedRequiredArguments();
+    public Build() {
+        _controllerRecognizers = new LinkedList<ControllerRecognizer>();
+        _argumentRecognizers = new LinkedList<ArgumentWithOptions>();
+    }
 
-            if (unMatchedRequiredArguments.size()>0)
-            {
-                throw new RuntimeException("Missing arguments")
-                          /*{
-                              Arguments = unMatchedRequiredArguments
-                                  .Select(
-                                      unmatched =>
-                                      new KeyValuePair<string, string>(unmatched.Argument.ToString(), unmatched.Argument.Help()))
-                                  .ToList()
-                          }*/;
+    public Build parameter(String argument) {
+        return parameter(argument, false, null, null);
+    }
+
+    public Build parameter(String argument, boolean required) {
+        return parameter(argument, required, null, null);
+    }
+
+    public Build parameter(String argument,
+            boolean required,
+            String description,
+            ArgumentAction action) {
+        _argumentRecognizers.add(new ArgumentWithOptions(ArgumentParameter.parse(argument),
+                required, description, action));
+        return this;
+    }
+
+    public ParsedArguments parse(String[] arg) {
+        ArgumentParser argumentParser = new ArgumentParser(_argumentRecognizers);
+        // TODO: Need to figure out where this goes. To Much logic for this layer.
+        ArgumentLexer lexer = ArgumentLexer.lex(arg);
+        ParsedArguments parsedArguments = argumentParser.Parse(lexer, arg);
+        if (_controllerRecognizers.size() > 0) {
+            ControllerRecognizer controllerRecognizer =
+                    controllerRecognizes(arg);
+            if (null != controllerRecognizer) {
+                ParsedMethod parsedMethod = controllerRecognizer.parse(arg);
+                parsedMethod.factory = _container.factory;
+                ParsedArguments merged = parsedArguments.merge(parsedMethod);
+                if (!controllerRecognizer.ignoreGlobalUnMatchedParameters) {
+                    FailOnUnMatched(merged);
+                }
+                return merged;
             }
         }
+        FailOnUnMatched(parsedArguments);
+        return parsedArguments;
+    }
 
-        public Build RecognizeClass(Class arg)
-        {
-            _controllerRecognizers.add(new ControllerRecognizer(arg));
-            return this;
-        }
-        public Build Recognize(Object arg)
-        {
-            _controllerRecognizers.add(new ControllerRecognizer(arg.getClass()));
-            _container.instances.put(arg.getClass(),arg);
-            return this;
-        }
+    private static void FailOnUnMatched(ParsedArguments parsedArguments) { // This does not belong here. This is just supposed to be a fluent layer.
+        Collection<ArgumentWithOptions> unMatchedRequiredArguments = parsedArguments.UnMatchedRequiredArguments();
 
-        public String help()
-        {
-            throw new RuntimeException("Not implemented");
-            /*
-            var cout = new StringWriter(Culture);
-            Parse(new []{"Help"}).Invoke(cout);
-			return cout.ToString();
-                       
-                        */
+        if (unMatchedRequiredArguments.size() > 0) {
+            throw new MissingArgumentException() /*
+                     * {
+                     * Arguments = unMatchedRequiredArguments .Select( unmatched
+                     * => new KeyValuePair<string,
+                     * string>(unmatched.Argument.ToString(),
+                     * unmatched.Argument.Help())) .ToList() }
+                     */;
         }
+    }
 
-        public Collection<ControllerRecognizer> GetControllerRecognizers()
-        {
-            return _controllerRecognizers; 
-        }
+    public Build RecognizeClass(Class arg) {
+        _controllerRecognizers.add(new ControllerRecognizer(arg));
+        return this;
+    }
 
-        public Collection<ArgumentWithOptions> GetGlobalParameters()
-        {
-            return _argumentRecognizers; 
+    public Build Recognize(Object arg) {
+        _controllerRecognizers.add(new ControllerRecognizer(arg.getClass()));
+        _container.instances.put(arg.getClass(), arg);
+        return this;
+    }
+
+    public String help() {
+        throw new RuntimeException("Not implemented");
+        /*
+         * var cout = new StringWriter(Culture); Parse(new
+         * []{"Help"}).Invoke(cout); return cout.ToString();
+         *
+         */
+    }
+
+    public Collection<ControllerRecognizer> GetControllerRecognizers() {
+        return _controllerRecognizers;
+    }
+
+    public Collection<ArgumentWithOptions> GetGlobalParameters() {
+        return _argumentRecognizers;
+    }
+    /*
+     * public Func<Type, object> GetFactory() { return
+     * _container.CreateInstance; }
+     */
+
+    public Build setFactory(ObjectFactory objectFactory) {
+        _container.factory = objectFactory;
+        return this;
+    }
+
+    private ControllerRecognizer controllerRecognizes(String[] arg) {
+        for (int i = 0; i < _controllerRecognizers.size(); i++) {
+            ControllerRecognizer r = _controllerRecognizers.get(i);
+            if (r.recognize(arg)) {
+                return r;
+            }
         }
-/*
-        public Func<Type, object> GetFactory()
-        {
-            return _container.CreateInstance;
-        }*/
-    
+        return null;
+    }
 }

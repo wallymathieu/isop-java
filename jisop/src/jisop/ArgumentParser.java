@@ -20,8 +20,9 @@ public class ArgumentParser {
         // var argumentWithOptions = _argumentWithOptions
         //                       .SingleOrDefault(argopt => argopt.Argument.Accept(current.Index,current.Value));
         for (int i = 0; i < _argumentWithOptions.size(); i++) {
-            if (_argumentWithOptions.get(i).argument.accept(index, value)) {
-                return _argumentWithOptions.get(i);
+            ArgumentWithOptions arg =_argumentWithOptions.get(i);
+            if (arg.argument.accept(index, value)) {
+                return arg;
             }
         }
         return null;
@@ -30,7 +31,7 @@ public class ArgumentParser {
     private Collection<UnrecognizedArgument> unrecoqnizedArguments(String[] arguments, LinkedList<Integer> recognizedIndexes) {
         LinkedList<UnrecognizedArgument> unrecognized = new LinkedList<UnrecognizedArgument>();
         for (int i = 0; i < arguments.length; i++) {
-            if (!recognizedIndexes.contains(i))
+            if (!recognizedIndexes.contains(new Integer(i)))
                 unrecognized.add(new UnrecognizedArgument(i,arguments[i]));
         }
         return unrecognized;

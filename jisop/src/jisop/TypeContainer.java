@@ -9,5 +9,5 @@ import java.util.HashMap;
 class TypeContainer {
     HashMap<Class,Object> instances;
 
-    
+    public ObjectFactory factory;
 }

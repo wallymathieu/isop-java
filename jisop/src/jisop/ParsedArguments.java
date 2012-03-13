@@ -1,5 +1,6 @@
 package jisop;
 
+import java.io.OutputStream;
 import java.io.PrintStream;
 import java.util.Collection;
 import java.util.LinkedList;
@@ -49,8 +50,13 @@ public class ParsedArguments {
          */
     }
 
-    public void Invoke(PrintStream out) {
-        throw new UnsupportedOperationException("Not yet implemented");
+    public void invoke(OutputStream out) {
+        for (int i = 0; i < recognizedArguments.size(); i++) {
+            RecognizedArgument arg= recognizedArguments.get(i);
+            if (null!=arg.withOptions.action){
+                arg.withOptions.action.invoke(arg.value);
+            }
+        }
     }
 
     private boolean isRecognized(jisop.ArgumentWithOptions arg) {
@@ -59,5 +65,9 @@ public class ParsedArguments {
                 return true;
         }
         return false;
+    }
+
+    ParsedArguments merge(ParsedMethod parsedMethod) {
+        throw new UnsupportedOperationException("Not yet implemented");
     }
 }

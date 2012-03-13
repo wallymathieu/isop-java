@@ -10,13 +10,17 @@ public class ArgumentWithOptions {
 
     public final String Description;
     public final ArgumentParameter argument;
-    //public final Action<string> Action { get; set; }
+    public final ArgumentAction action;
     public final boolean Required;
 
-    public ArgumentWithOptions(ArgumentParameter argument, boolean required, String description) {
+    public ArgumentWithOptions(ArgumentParameter argument,
+            boolean required, 
+            String description,
+            ArgumentAction action) {
         Description = description;
         this.argument = argument;
         Required = required;
+        this.action = action;
     }
 
     public String help() {
