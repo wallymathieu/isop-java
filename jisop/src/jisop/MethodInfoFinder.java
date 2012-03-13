@@ -19,7 +19,8 @@ public class MethodInfoFinder {
         // if (null != name)
         //     retv = retv.Where (m => m.Name.Equals (name, StringComparison.OrdinalIgnoreCase));
         // return retv;
-        return null;
+        throw new RuntimeException("not implemented");
+        //return null;
     }
 
     public List<Method> FindSet(List<Method> methods, Class returnType, String name, List<Class> parameters) {
@@ -36,8 +37,7 @@ public class MethodInfoFinder {
         //     }
         //     return new MethodInfoOrProperty(m); 
         // });
-        return null;
-
+        throw new RuntimeException("not implemented");
     }
 
     public Method Match(List<Method> methods, Class returnType, String name, List<Class> parameters) {
