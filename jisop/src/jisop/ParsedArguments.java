@@ -67,8 +67,8 @@ public class ParsedArguments {
         return false;
     }
 
-    ParsedArguments merge(ParsedMethod parsedMethod) {
-        throw new UnsupportedOperationException("Not yet implemented");
+    ParsedArguments merge(ParsedArguments parsedMethod) {
+        return new MergedParsedArguments(this, parsedMethod);
     }
 
     public RecognizedArgument withName(String name) {

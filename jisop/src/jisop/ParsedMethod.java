@@ -11,14 +11,14 @@ import java.util.List;
  *
  * @author mathieu
  */
-public class ParsedMethod {
+public class ParsedMethod extends ParsedArguments{
     ObjectFactory factory;
     Method recognizedAction;
     List<Object> recognizedActionParameters;
     Object recognizedInstance;
-
+    
     ParsedMethod(ParsedArguments parsedArguments) {
-        throw new UnsupportedOperationException("Not yet implemented");
+       super(parsedArguments);
     }
     
 }

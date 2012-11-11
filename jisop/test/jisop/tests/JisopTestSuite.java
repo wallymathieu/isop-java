@@ -20,19 +20,11 @@ import org.junit.runners.Suite;
 public class JisopTestSuite {
 
     @BeforeClass
-    public static void setUpClass() throws Exception {
+    public static void setUpClass() {
     }
 
     @AfterClass
-    public static void tearDownClass() throws Exception {
-    }
-
-    @Before
-    public void setUp() throws Exception {
-    }
-
-    @After
-    public void tearDown() throws Exception {
+    public static void tearDownClass() {
     }
     
 }

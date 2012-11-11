@@ -173,7 +173,13 @@ public class ArgumentParserTests {
 
     @Test
     public void It_can_parse_class_and_method_and_fail_because_of_type_conversion() {
-        Build builder = new Build().RecognizeClass(SingleIntAction.class);
+        Build builder = new Build().setFactory(new ObjectFactory() {
+
+            @Override
+            public Object build(Class c) {
+                return new SingleIntAction();
+            }
+        }).RecognizeClass(SingleIntAction.class);
         try {
             builder.parse(new String[]{"SingleIntAction", "Action", "--param", "value"});
             fail();
@@ -214,8 +220,8 @@ public class ArgumentParserTests {
             public void write(int b) {
             }
         };
-        ParsedArguments arguments = new Build().RecognizeClass(MyController.class) //.Parameter("beta", arg => countArg++)
-                .setFactory(f).parse(new String[]{"My", "Action", "--param2", "value2", "--param3", "3", "--param1", "value1", "--param4", "3.4", "--beta"});
+        ParsedArguments arguments = new Build().setFactory(f).RecognizeClass(MyController.class) //.Parameter("beta", arg => countArg++)
+                .parse(new String[]{"My", "Action", "--param2", "value2", "--param3", "3", "--param1", "value1", "--param4", "3.4", "--beta"});
         assertEquals(0, arguments.unRecognizedArguments.size());
         arguments.invoke(out);
         assertEquals(1, __count);
@@ -226,7 +232,7 @@ public class ArgumentParserTests {
     public void It_can_parse_class_and_default_method_and_execute() {
         __count = 0;
 
-        ParsedArguments arguments = new Build().RecognizeClass(WithIndexController.class).setFactory(new ObjectFactory() {
+        ParsedArguments arguments = new Build().setFactory(new ObjectFactory() {
 
             @Override
             public Object build(Class c) {
@@ -234,13 +240,13 @@ public class ArgumentParserTests {
                 return new WithIndexController() {
 
                     @Override
-                    public String Index(String param1, String param2, int param3, double param4) {
+                    public String Index(WithIndexController.Param p) {
                         __count++;
                         return null;
                     }
                 };
             }
-        }).parse(new String[]{"WithIndex", /*
+        }).RecognizeClass(WithIndexController.class).parse(new String[]{"WithIndex", /*
                      * "Index",
                      */ "--param2", "value2", "--param3", "3", "--param1", "value1", "--param4", "3.4"});
 
@@ -255,13 +261,17 @@ public class ArgumentParserTests {
     }
 
     private class WithIndexController {
+        public class Param
+        {
+            public String param1;
+            public String param2;
+            public int param3;
+            public double param4;
+        }
 
         public WithIndexController() {
-            //  OnIndex = (p1, p2, p3, p4) => string.Empty;
         }
-        //public Func<string, string, int, decimal, string> OnIndex { get; set; }
-
-        public String Index(String param1, String param2, int param3, double param4) {
+        public String Index(Param p) {
             //    return OnIndex(param1, param2, param3, param4); 
             return null;
         }
