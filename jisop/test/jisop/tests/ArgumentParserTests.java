@@ -137,7 +137,7 @@ public class ArgumentParserTests {
                 return new MyController() {
 
                     @Override
-                    public String Action(String param1, String param2, int param3, double param4) {
+                    public String Action(MyController.Param p) {
                         __count++;
                         return null;
                     }
@@ -164,8 +164,10 @@ public class ArgumentParserTests {
     }
 
     class SingleIntAction {
-
-        public void Action(int param) {
+        public class Param{
+            public int param;
+        }
+        public void Action(Param param) {
         }
     }
 
@@ -200,7 +202,7 @@ public class ArgumentParserTests {
                 return new MyController() {
 
                     @Override
-                    public String Action(String param1, String param2, int param3, double param4) {
+                    public String Action(MyController.Param p) {
                         __count++;
                         return null;
                     }

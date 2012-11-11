@@ -15,7 +15,7 @@ public class ParsedMethod {
     ObjectFactory factory;
     Method recognizedAction;
     List<Object> recognizedActionParameters;
-    Class recognizedClass;
+    Object recognizedInstance;
 
     ParsedMethod(ParsedArguments parsedArguments) {
         throw new UnsupportedOperationException("Not yet implemented");

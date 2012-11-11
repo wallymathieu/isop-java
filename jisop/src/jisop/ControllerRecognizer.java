@@ -1,7 +1,12 @@
 package jisop;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -13,9 +18,34 @@ class ControllerRecognizer {
     boolean ignoreGlobalUnMatchedParameters = false;
     Transform _transform = new Transform();
     private TypeConverter _typeConverter;
+    private ObjectFactory _factory;
+    private class DefaultTypeConverter implements TypeConverter
+    {
+        @Override
+        public Object convert(Class cls, String value) {
+            if (cls==String.class){
+                return value;
+            }
+            if (cls==Integer.class){
+                return Integer.parseInt(value);
+            }
+            if (cls==int.class){
+               return Integer.parseInt(value);
+            }
+            if (cls==double.class){
+                return Double.parseDouble(value);
+            }
+            throw new RuntimeException("not implemented "+cls.getName());
+        }
+    }
 
-    ControllerRecognizer(Class arg) {
+    ControllerRecognizer(Class arg, ObjectFactory factory) {
         type = arg;
+        _typeConverter=new DefaultTypeConverter();
+        if (null==factory){
+            throw new RuntimeException("factory missing");
+        }
+        _factory=factory;
     }
 
     boolean recognize(String[] arg) {
@@ -23,16 +53,65 @@ class ControllerRecognizer {
         return null != FindMethodInfo(lexer);
     }
 
+    private abstract class PropertyInfo {
+
+        public String name;
+        public Class propertyType;
+
+        public abstract void setValue(Object obj, Object value) throws IllegalArgumentException, IllegalAccessException;
+    }
+
+    private class PropertyInfoFromField extends PropertyInfo {
+
+        private Field f;
+
+        public PropertyInfoFromField(Field f) {
+            this.f = f;
+            this.name = f.getName();
+            this.propertyType = f.getType();
+        }
+
+        @Override
+        public void setValue(Object obj, Object value) throws IllegalArgumentException, IllegalAccessException {
+            f.set(obj, value);
+        }
+    }
+
+    private PropertyInfo[] GetProperties(Class<?> p) {
+        Field[] fields = p.getFields();
+        PropertyInfo[] props = new PropertyInfo[fields.length];
+        for (int i = 0; i < fields.length; i++) {
+            Field f = fields[i];
+            props[i] = new PropertyInfoFromField(f);
+        }
+        return props;
+    }
+
+    private boolean IsClass(Class<?> p) {
+        return true;
+    }
+
     private List<ArgumentWithOptions> GetRecognizers(Method method) {
-        throw new RuntimeException("Not implemented");
-        //  var parameterInfos = method.GetParameters();
-        //  var recognizers = parameterInfos
-        //      .Select (parameterInfo => 
-        //          new ArgumentWithOptions (ArgumentParameter.Parse (parameterInfo.Name,_culture), required: true))
-        //      .ToList ();
-        //  recognizers.Insert(0, new ArgumentWithOptions(ArgumentParameter.Parse("#1" + method.Name, _culture), required: false));
-        //  return recognizers;
-        
+        Class<?>[] parameterInfos = method.getParameterTypes();
+
+        List<ArgumentWithOptions> recognizers = new ArrayList<ArgumentWithOptions>();
+
+        for (Class<?> paramInfo : parameterInfos) {
+            if (IsClass(paramInfo)) {
+                //var obj = Activator.CreateInstance(paramInfo.ParameterType);
+                for (PropertyInfo prop : GetProperties(paramInfo)) {
+                    ArgumentWithOptions arg = new ArgumentWithOptions(
+                            ArgumentParameter.parse(prop.name), true, "", null);
+                    recognizers.add(arg);
+                }
+            } else {
+                throw new RuntimeException();
+                //var recognizedArgument =  parsedArguments.RecognizedArguments.First(
+                //    a => a.Argument.ToUpperInvariant().Equals(paramInfo.Name.ToUpperInvariant()));
+                //parameters.Add( ConvertFrom (recognizedArgument, paramInfo.ParameterType));
+            }
+        }
+        return recognizers;
     }
 
     ParsedMethod parse(String[] arg) {
@@ -44,26 +123,79 @@ class ControllerRecognizer {
 
         ArgumentParser parser = new ArgumentParser(argumentRecognizers);
         ParsedArguments parsedArguments = parser.Parse(lexer, arg);
-
-        return Parse(methodInfo, parsedArguments);
+        Object instance = _factory.build(type);
+        return Parse(instance, methodInfo, parsedArguments);
     }
 
-    private static List<Object> GetParametersForMethod(Method method, ParsedArguments parsedArguments) {
-        throw new RuntimeException("Not implemented");
-        
-        //var parameterInfos = method.getParameterTypes();
-        //var parameters = new List<Object>();
+    private Object newInstance(Class<?> type, Object instance) {
+        try {
+            
+            for(Constructor c: type.getConstructors()){
+                if (c.getParameterTypes().length==0){
+                    return c.newInstance(new Object[0]);
+                }
+            }
+            for (Constructor c: type.getConstructors()) {
+                if (c.getParameterTypes().length==1 
+                        && c.getParameterTypes()[0].isAssignableFrom(instance.getClass())){
+                    Object[] args = new Object[1];
+                    args[0]=instance;
+                    return c.newInstance(args);
+                }
+            }
+            throw new RuntimeException("Could not find constructor");
+            //return type.newInstance();
+        } catch (IllegalAccessException ex) {
+            Logger.getLogger(ControllerRecognizer.class.getName()).log(Level.SEVERE, null, ex);
+            throw new RuntimeException("Class: " + type.getName(), ex);
+        } catch (IllegalArgumentException ex) {
+            Logger.getLogger(ControllerRecognizer.class.getName()).log(Level.SEVERE, null, ex);
+            throw new RuntimeException("Class: " + type.getName(), ex);
+        } catch (InvocationTargetException ex) {
+            Logger.getLogger(ControllerRecognizer.class.getName()).log(Level.SEVERE, null, ex);
+            throw new RuntimeException("Class: " + type.getName(), ex);
+        } catch (InstantiationException ex) {
+            Logger.getLogger(ControllerRecognizer.class.getName()).log(Level.SEVERE, null, ex);
+            throw new RuntimeException("Class: " + type.getName(), ex);
+        }
 
-        //foreach (var paramInfo in parameterInfos)
-        //{
-        //    var recognizedArgument =  parsedArguments.RecognizedArguments.First(
-        //        a => a.Argument.ToUpperInvariant().Equals(paramInfo.Name.ToUpperInvariant()));
-        //    parameters.Add( ConvertFrom (recognizedArgument, paramInfo));
-        //}
-        //return parameters;
     }
 
-    public ParsedMethod Parse(Method methodInfo, ParsedArguments parsedArguments) {
+    private List<Object> GetParametersForMethod(Object instance, Method method, ParsedArguments parsedArguments) {
+        Class<?>[] parameterInfos = method.getParameterTypes();
+
+        List<Object> parameters = new ArrayList<Object>();
+
+        for (Class<?> paramInfo : parameterInfos) {
+            if (IsClass(paramInfo)) {
+                try {
+                    Object obj = newInstance(paramInfo,instance);
+                    for (PropertyInfo prop : GetProperties(paramInfo)) {
+                        RecognizedArgument recognizedArgument = parsedArguments.withName(prop.name);
+
+
+                        prop.setValue(obj, ConvertFrom(recognizedArgument, prop.propertyType));
+
+                    }
+                    parameters.add(obj);
+                } catch (IllegalAccessException ex2) {
+                    throw new RuntimeException(ex2);
+                } catch (IllegalArgumentException ex3) {
+                    System.err.println(ex3.getMessage());
+                    throw new RuntimeException("Class: " + paramInfo.getName(), ex3);
+                } 
+            } else {
+                throw new RuntimeException();
+                //var recognizedArgument =  parsedArguments.RecognizedArguments.First(
+                //    a => a.Argument.ToUpperInvariant().Equals(paramInfo.Name.ToUpperInvariant()));
+                //parameters.Add( ConvertFrom (recognizedArgument, paramInfo.ParameterType));
+            }
+        }
+
+        return parameters;
+    }
+
+    public ParsedMethod Parse(Object instance, Method methodInfo, ParsedArguments parsedArguments) {
         Collection<ArgumentWithOptions> unMatchedRequiredArguments = parsedArguments.UnMatchedRequiredArguments();
         if (unMatchedRequiredArguments.size() > 0) {
             throw new MissingArgumentException();
@@ -73,7 +205,7 @@ class ControllerRecognizer {
 //                          };
         }
 
-        List<Object> recognizedActionParameters = GetParametersForMethod(methodInfo, parsedArguments);
+        List<Object> recognizedActionParameters = GetParametersForMethod(instance, methodInfo, parsedArguments);
 
         parsedArguments.unRecognizedArguments = parsedArguments.unRecognizedArguments;
 //                .Where(unrecognized=>unrecognized.Index>=1); //NOTE: should be different!
@@ -81,7 +213,7 @@ class ControllerRecognizer {
         ParsedMethod p = new ParsedMethod(parsedArguments);
         p.recognizedAction = methodInfo;
         p.recognizedActionParameters = recognizedActionParameters;
-        p.recognizedClass = type;
+        p.recognizedInstance = instance;
 
         return p;
     }
@@ -150,15 +282,9 @@ class ControllerRecognizer {
 
     private Object ConvertFrom(RecognizedArgument arg1, Class parameterInfo) {
         try {
-
             return _typeConverter.convert(parameterInfo, arg1.value);
         } catch (Exception e) {
-            throw new TypeConversionFailedException()/*
-                     * ("Could not convert argument", e){
-                     * Argument=arg1.WithOptions.Argument.ToString(),
-                     * Value=arg1.Value, TargetType=parameterInfo.ParameterType 
-                }
-                     */;
+            throw new TypeConversionFailedException("Parameter: "+parameterInfo.getName()+", value: "+arg1.value, e);
         }
     }
 }

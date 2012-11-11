@@ -70,4 +70,12 @@ public class ParsedArguments {
     ParsedArguments merge(ParsedMethod parsedMethod) {
         throw new UnsupportedOperationException("Not yet implemented");
     }
+
+    public RecognizedArgument withName(String name) {
+        for (RecognizedArgument r: recognizedArguments) {
+            if (r.argument.toUpperCase().equals(name.toUpperCase()))
+                return r;
+        }
+        return null;
+    }
 }

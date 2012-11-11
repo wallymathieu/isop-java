@@ -14,11 +14,11 @@ public class Build {
     private final List<ControllerRecognizer> _controllerRecognizers;
     private TypeConverter typeConverter;
     private final TypeContainer _container = new TypeContainer();
-
     public Build() {
         _controllerRecognizers = new LinkedList<ControllerRecognizer>();
         _argumentRecognizers = new LinkedList<ArgumentWithOptions>();
     }
+
 
     public Build parameter(String argument) {
         return parameter(argument, false, null, null);
@@ -47,7 +47,7 @@ public class Build {
                     controllerRecognizes(arg);
             if (null != controllerRecognizer) {
                 ParsedMethod parsedMethod = controllerRecognizer.parse(arg);
-                parsedMethod.factory = _container.factory;
+                parsedMethod.factory = _container;
                 ParsedArguments merged = parsedArguments.merge(parsedMethod);
                 if (!controllerRecognizer.ignoreGlobalUnMatchedParameters) {
                     FailOnUnMatched(merged);
@@ -74,12 +74,12 @@ public class Build {
     }
 
     public Build RecognizeClass(Class arg) {
-        _controllerRecognizers.add(new ControllerRecognizer(arg));
+        _controllerRecognizers.add(new ControllerRecognizer(arg,_container));
         return this;
     }
 
     public Build Recognize(Object arg) {
-        _controllerRecognizers.add(new ControllerRecognizer(arg.getClass()));
+        _controllerRecognizers.add(new ControllerRecognizer(arg.getClass(),_container));
         _container.instances.put(arg.getClass(), arg);
         return this;
     }
@@ -106,7 +106,7 @@ public class Build {
      */
 
     public Build setFactory(ObjectFactory objectFactory) {
-        _container.factory = objectFactory;
+        _container.setFactory(objectFactory);
         return this;
     }
 
