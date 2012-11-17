@@ -19,6 +19,15 @@ class ControllerRecognizer {
     Transform _transform = new Transform();
     private TypeConverter _typeConverter;
     private ObjectFactory _factory;
+
+    private Collection<UnrecognizedArgument> withoutIndex0to1(Collection<UnrecognizedArgument> unRecognizedArguments) {
+        List<UnrecognizedArgument> retval = new ArrayList<UnrecognizedArgument>();
+        for(UnrecognizedArgument arg : unRecognizedArguments){
+            if (arg.index>=2)
+                retval.add(arg);
+        }
+        return retval;
+    }
     private class DefaultTypeConverter implements TypeConverter
     {
         @Override
@@ -77,7 +86,7 @@ class ControllerRecognizer {
         }
     }
 
-    private PropertyInfo[] GetProperties(Class<?> p) {
+    private PropertyInfo[] getProperties(Class<?> p) {
         Field[] fields = p.getFields();
         PropertyInfo[] props = new PropertyInfo[fields.length];
         for (int i = 0; i < fields.length; i++) {
@@ -91,7 +100,7 @@ class ControllerRecognizer {
         return true;
     }
 
-    private List<ArgumentWithOptions> GetRecognizers(Method method) {
+    private List<ArgumentWithOptions> getRecognizers(Method method) {
         Class<?>[] parameterInfos = method.getParameterTypes();
 
         List<ArgumentWithOptions> recognizers = new ArrayList<ArgumentWithOptions>();
@@ -99,7 +108,7 @@ class ControllerRecognizer {
         for (Class<?> paramInfo : parameterInfos) {
             if (IsClass(paramInfo)) {
                 //var obj = Activator.CreateInstance(paramInfo.ParameterType);
-                for (PropertyInfo prop : GetProperties(paramInfo)) {
+                for (PropertyInfo prop : getProperties(paramInfo)) {
                     ArgumentWithOptions arg = new ArgumentWithOptions(
                             ArgumentParameter.parse(prop.name), true, "", null);
                     recognizers.add(arg);
@@ -110,7 +119,7 @@ class ControllerRecognizer {
                 //    a => a.Argument.ToUpperInvariant().Equals(paramInfo.Name.ToUpperInvariant()));
                 //parameters.Add( ConvertFrom (recognizedArgument, paramInfo.ParameterType));
             }
-        }
+        }        
         return recognizers;
     }
 
@@ -119,7 +128,7 @@ class ControllerRecognizer {
 
         Method methodInfo = findMethodInfo(lexer);
 
-        List<ArgumentWithOptions> argumentRecognizers = GetRecognizers(methodInfo);
+        List<ArgumentWithOptions> argumentRecognizers = getRecognizers(methodInfo);
 
         ArgumentParser parser = new ArgumentParser(argumentRecognizers);
         ParsedArguments parsedArguments = parser.parse(lexer, arg);
@@ -161,7 +170,7 @@ class ControllerRecognizer {
 
     }
 
-    private List<Object> GetParametersForMethod(Object instance, Method method, ParsedArguments parsedArguments) {
+    private List<Object> getParametersForMethod(Object instance, Method method, ParsedArguments parsedArguments) {
         Class<?>[] parameterInfos = method.getParameterTypes();
 
         List<Object> parameters = new ArrayList<Object>();
@@ -170,7 +179,7 @@ class ControllerRecognizer {
             if (IsClass(paramInfo)) {
                 try {
                     Object obj = newInstance(paramInfo,instance);
-                    for (PropertyInfo prop : GetProperties(paramInfo)) {
+                    for (PropertyInfo prop : getProperties(paramInfo)) {
                         RecognizedArgument recognizedArgument = parsedArguments.withName(prop.name);
 
 
@@ -205,9 +214,9 @@ class ControllerRecognizer {
 //                          };
         }
 
-        List<Object> recognizedActionParameters = GetParametersForMethod(instance, methodInfo, parsedArguments);
+        List<Object> recognizedActionParameters = getParametersForMethod(instance, methodInfo, parsedArguments);
 
-        parsedArguments.unRecognizedArguments = parsedArguments.unRecognizedArguments;
+        parsedArguments.unRecognizedArguments = withoutIndex0to1( parsedArguments.unRecognizedArguments);
 //                .Where(unrecognized=>unrecognized.Index>=1); //NOTE: should be different!
 
         ParsedMethod p = new ParsedMethod(parsedArguments);

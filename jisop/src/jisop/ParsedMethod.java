@@ -29,7 +29,8 @@ public class ParsedMethod extends ParsedArguments {
         super(parsedArguments);
     }
 
-    public void Invoke(OutputStream cout) {
+    @Override
+    public void invoke(OutputStream cout) {
         OutputStreamWriter writer = new OutputStreamWriter(cout);
         Object retval;
         try {
@@ -55,7 +56,9 @@ public class ParsedMethod extends ParsedArguments {
                 for (Object item : (Collection) retval) {
                     writer.write((String) retval);
                 }
-            } else {
+            } else if (retval.getClass().isArray()){
+                throw new RuntimeException("not implemented");
+            }else{
                 writer.write(retval.toString());
             }
         } catch (IOException ex) {

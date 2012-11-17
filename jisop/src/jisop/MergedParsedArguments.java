@@ -4,6 +4,7 @@
  */
 package jisop;
 
+import java.io.OutputStream;
 import java.util.*;
 
 /**
@@ -21,6 +22,11 @@ class MergedParsedArguments extends ParsedArguments {
         argumentWithOptions = ListUtils.union(first.argumentWithOptions,second.argumentWithOptions);
         unRecognizedArguments = ListUtils.intersect(first.unRecognizedArguments,second.unRecognizedArguments);
 
+    }
+    @Override
+    public void invoke(OutputStream out) {
+        _first.invoke(out);
+        _second.invoke(out);
     }
 
     

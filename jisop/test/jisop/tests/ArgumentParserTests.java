@@ -149,7 +149,12 @@ public class ArgumentParserTests {
                 .recognizeClass(MyController.class)
                 .parse(new String[]{"my", "action", "--param2", "value2", "--param3", "3", "--param1", "value1", "--param4", "3.4"});
         assertEquals(0, arguments.unRecognizedArguments.size());
-        arguments.invoke(null);
+        OutputStream out = new OutputStream() {
+
+            public void write(int b) {
+            }
+        };
+        arguments.invoke(out);
         assertEquals(1, __count);
     }
 
@@ -258,23 +263,6 @@ public class ArgumentParserTests {
             }
         });
         assertEquals(1,__count);
-    }
-
-    private class WithIndexController {
-        public class Param
-        {
-            public String param1;
-            public String param2;
-            public int param3;
-            public double param4;
-        }
-
-        public WithIndexController() {
-        }
-        public String Index(Param p) {
-            //    return OnIndex(param1, param2, param3, param4); 
-            return null;
-        }
     }
 
     @Test
