@@ -63,13 +63,7 @@ public class Build {
         Collection<ArgumentWithOptions> unMatchedRequiredArguments = parsedArguments.UnMatchedRequiredArguments();
 
         if (unMatchedRequiredArguments.size() > 0) {
-            throw new MissingArgumentException() /*
-                     * {
-                     * Arguments = unMatchedRequiredArguments .Select( unmatched
-                     * => new KeyValuePair<string,
-                     * string>(unmatched.Argument.ToString(),
-                     * unmatched.Argument.Help())) .ToList() }
-                     */;
+            throw new MissingArgumentException();
         }
     }
 
@@ -86,11 +80,6 @@ public class Build {
 
     public String help() {
         throw new RuntimeException("Not implemented");
-        /*
-         * var cout = new StringWriter(Culture); Parse(new
-         * []{"Help"}).Invoke(cout); return cout.ToString();
-         *
-         */
     }
 
     public Collection<ControllerRecognizer> GetControllerRecognizers() {

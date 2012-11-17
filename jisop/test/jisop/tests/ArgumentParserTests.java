@@ -145,8 +145,8 @@ public class ArgumentParserTests {
             }
         };
         ParsedArguments arguments = new Build()
-                .RecognizeClass(MyController.class)
                 .setFactory(factory)
+                .RecognizeClass(MyController.class)
                 .parse(new String[]{"My", "Action", "--param2", "value2", "--param3", "3", "--param1", "value1", "--param4", "3.4"});
         assertEquals(0, arguments.unRecognizedArguments.size());
         arguments.invoke(null);

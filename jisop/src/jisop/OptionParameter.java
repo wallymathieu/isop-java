@@ -10,7 +10,7 @@ class OptionParameter {
             if (value.contains("|"))
             {
                 String prototype = value;
-                String[] names = StringUtils.trimEnd( prototype, "=:").split("|");
+                String[] names =StringUtils.split( StringUtils.trimEnd( prototype, "=:"),'|');
                 String delimiter = null;
                 String last = prototype.substring(prototype.length()-2, prototype.length()-1);
                 switch (last.charAt(0))

@@ -1,10 +1,13 @@
 package jisop;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  *
  * @author mathieu
  */
-class StringUtils {
+public class StringUtils {
 
     static String join(String delim, String[] array) {
         StringBuilder sb = new StringBuilder();
@@ -40,6 +43,22 @@ class StringUtils {
             end--;
         }
         return str.substring(0, end);
+    }
+
+    public static String[] split(String str, char val) {
+        List<String> retval = new ArrayList<String>();
+        int last = -1;
+        
+        for (int i = 0; i < str.length(); i++) {
+            if (str.charAt(i)==val){
+                retval.add(str.substring(last+1,i));
+                last = i;
+            }
+        }
+        if (last<str.length()){
+            retval.add(str.substring(last+1,str.length()));
+        }
+        return retval.toArray(new String[0]);
     }
     
 }
