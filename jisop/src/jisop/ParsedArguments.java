@@ -21,33 +21,27 @@ public class ParsedArguments {
     public ParsedArguments(List<ArgumentWithOptions> ArgumentWithOptions,
             List<RecognizedArgument> recognizedArguments,
             Collection<UnrecognizedArgument> UnRecognizedArguments) {
-        this.ArgumentWithOptions= ArgumentWithOptions;
+        this.argumentWithOptions= ArgumentWithOptions;
         this.recognizedArguments = recognizedArguments;
         this.unRecognizedArguments = UnRecognizedArguments;
     }
     public ParsedArguments(ParsedArguments parsedArguments) {
         recognizedArguments = parsedArguments.recognizedArguments;
-        ArgumentWithOptions = parsedArguments.ArgumentWithOptions;
+        argumentWithOptions = parsedArguments.argumentWithOptions;
         unRecognizedArguments = parsedArguments.unRecognizedArguments;
     }
     public List<RecognizedArgument> recognizedArguments;
     public Collection<UnrecognizedArgument> unRecognizedArguments;
-    public List<ArgumentWithOptions> ArgumentWithOptions;
+    public List<ArgumentWithOptions> argumentWithOptions;
 
     public Collection<ArgumentWithOptions> UnMatchedRequiredArguments() {
         LinkedList<ArgumentWithOptions> unmatched = new LinkedList<ArgumentWithOptions>();
-        for (int i = 0; i < ArgumentWithOptions.size(); i++) {
-            ArgumentWithOptions arg = ArgumentWithOptions.get(i);
+        for (int i = 0; i < argumentWithOptions.size(); i++) {
+            ArgumentWithOptions arg = argumentWithOptions.get(i);
             if (arg.Required && !isRecognized(arg))
                 unmatched.add(arg);
         }
         return unmatched;
-        /*
-         * var unMatchedRequiredArguments = ArgumentWithOptions
-         * .Where(argumentWithOptions => argumentWithOptions.Required)
-         * .Where(argumentWithOptions => !RecognizedArguments .Any(recogn =>
-         * recogn.WithOptions.Equals(argumentWithOptions))); return unMatchedRequiredArguments;
-         */
     }
 
     public void invoke(OutputStream out) {

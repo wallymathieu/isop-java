@@ -41,7 +41,7 @@ public class Build {
         ArgumentParser argumentParser = new ArgumentParser(_argumentRecognizers);
         // TODO: Need to figure out where this goes. To Much logic for this layer.
         ArgumentLexer lexer = ArgumentLexer.lex(arg);
-        ParsedArguments parsedArguments = argumentParser.Parse(lexer, arg);
+        ParsedArguments parsedArguments = argumentParser.parse(lexer, arg);
         if (_controllerRecognizers.size() > 0) {
             ControllerRecognizer controllerRecognizer =
                     controllerRecognizes(arg);
@@ -50,16 +50,16 @@ public class Build {
                 parsedMethod.factory = _container;
                 ParsedArguments merged = parsedArguments.merge(parsedMethod);
                 if (!controllerRecognizer.ignoreGlobalUnMatchedParameters) {
-                    FailOnUnMatched(merged);
+                    failOnUnMatched(merged);
                 }
                 return merged;
             }
         }
-        FailOnUnMatched(parsedArguments);
+        failOnUnMatched(parsedArguments);
         return parsedArguments;
     }
 
-    private static void FailOnUnMatched(ParsedArguments parsedArguments) { // This does not belong here. This is just supposed to be a fluent layer.
+    private static void failOnUnMatched(ParsedArguments parsedArguments) { // This does not belong here. This is just supposed to be a fluent layer.
         Collection<ArgumentWithOptions> unMatchedRequiredArguments = parsedArguments.UnMatchedRequiredArguments();
 
         if (unMatchedRequiredArguments.size() > 0) {
@@ -67,12 +67,12 @@ public class Build {
         }
     }
 
-    public Build RecognizeClass(Class arg) {
+    public Build recognizeClass(Class arg) {
         _controllerRecognizers.add(new ControllerRecognizer(arg,_container));
         return this;
     }
 
-    public Build Recognize(Object arg) {
+    public Build recognize(Object arg) {
         _controllerRecognizers.add(new ControllerRecognizer(arg.getClass(),_container));
         _container.instances.put(arg.getClass(), arg);
         return this;
@@ -82,11 +82,11 @@ public class Build {
         throw new RuntimeException("Not implemented");
     }
 
-    public Collection<ControllerRecognizer> GetControllerRecognizers() {
+    public Collection<ControllerRecognizer> getControllerRecognizers() {
         return _controllerRecognizers;
     }
 
-    public Collection<ArgumentWithOptions> GetGlobalParameters() {
+    public Collection<ArgumentWithOptions> getGlobalParameters() {
         return _argumentRecognizers;
     }
     /*

@@ -17,9 +17,9 @@ class MergedParsedArguments extends ParsedArguments {
     public MergedParsedArguments(ParsedArguments first, ParsedArguments second) {
          _first = first;
         _second = second;
-        recognizedArguments = ListUtils.Union(first.recognizedArguments,second.recognizedArguments);
-        ArgumentWithOptions = ListUtils.Union(first.ArgumentWithOptions,second.ArgumentWithOptions);
-        unRecognizedArguments = ListUtils.Intersect(first.unRecognizedArguments,second.unRecognizedArguments);
+        recognizedArguments = ListUtils.union(first.recognizedArguments,second.recognizedArguments);
+        argumentWithOptions = ListUtils.union(first.argumentWithOptions,second.argumentWithOptions);
+        unRecognizedArguments = ListUtils.intersect(first.unRecognizedArguments,second.unRecognizedArguments);
 
     }
 

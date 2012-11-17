@@ -16,7 +16,7 @@ public class MyController {
         public int param3;
         public double param4;
     }
-    public String Action(Param p) {
+    public String action(Param p) {
         return null;
     }
 }

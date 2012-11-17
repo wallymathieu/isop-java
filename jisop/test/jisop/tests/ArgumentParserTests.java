@@ -137,7 +137,7 @@ public class ArgumentParserTests {
                 return new MyController() {
 
                     @Override
-                    public String Action(MyController.Param p) {
+                    public String action(MyController.Param p) {
                         __count++;
                         return null;
                     }
@@ -146,8 +146,8 @@ public class ArgumentParserTests {
         };
         ParsedArguments arguments = new Build()
                 .setFactory(factory)
-                .RecognizeClass(MyController.class)
-                .parse(new String[]{"My", "Action", "--param2", "value2", "--param3", "3", "--param1", "value1", "--param4", "3.4"});
+                .recognizeClass(MyController.class)
+                .parse(new String[]{"my", "action", "--param2", "value2", "--param3", "3", "--param1", "value1", "--param4", "3.4"});
         assertEquals(0, arguments.unRecognizedArguments.size());
         arguments.invoke(null);
         assertEquals(1, __count);
@@ -155,7 +155,7 @@ public class ArgumentParserTests {
 
     @Test
     public void It_can_parse_class_and_method_and_fail() {
-        Build builder = new Build().RecognizeClass(MyController.class);
+        Build builder = new Build().recognizeClass(MyController.class);
         try {
             builder.parse(new String[]{"My", "Action", "--param2", "value2", "--paramX", "3", "--param1", "value1", "--param4", "3.4"});
             fail();
@@ -179,7 +179,7 @@ public class ArgumentParserTests {
             public Object build(Class c) {
                 return new SingleIntAction();
             }
-        }).RecognizeClass(SingleIntAction.class);
+        }).recognizeClass(SingleIntAction.class);
         try {
             builder.parse(new String[]{"SingleIntAction", "Action", "--param", "value"});
             fail();
@@ -189,7 +189,7 @@ public class ArgumentParserTests {
 
     @Test
     public void It_can_parse_class_and_method_and_fail_because_no_arguments_given() {
-        Build builder = new Build().RecognizeClass(MyController.class);
+        Build builder = new Build().recognizeClass(MyController.class);
         try {
             builder.parse(new String[]{"My", "Action"});
             fail();
@@ -208,7 +208,7 @@ public class ArgumentParserTests {
                 return new MyController() {
 
                     @Override
-                    public String Action(MyController.Param p) {
+                    public String action(MyController.Param p) {
                         __count++;
                         return null;
                     }
@@ -220,7 +220,7 @@ public class ArgumentParserTests {
             public void write(int b) {
             }
         };
-        ParsedArguments arguments = new Build().setFactory(f).RecognizeClass(MyController.class) //.Parameter("beta", arg => countArg++)
+        ParsedArguments arguments = new Build().setFactory(f).recognizeClass(MyController.class) //.Parameter("beta", arg => countArg++)
                 .parse(new String[]{"My", "Action", "--param2", "value2", "--param3", "3", "--param1", "value1", "--param4", "3.4", "--beta"});
         assertEquals(0, arguments.unRecognizedArguments.size());
         arguments.invoke(out);
@@ -246,7 +246,7 @@ public class ArgumentParserTests {
                     }
                 };
             }
-        }).RecognizeClass(WithIndexController.class).parse(new String[]{"WithIndex", /*
+        }).recognizeClass(WithIndexController.class).parse(new String[]{"WithIndex", /*
                      * "Index",
                      */ "--param2", "value2", "--param3", "3", "--param1", "value1", "--param4", "3.4"});
 
@@ -302,7 +302,7 @@ public class ArgumentParserTests {
     public void It_understands_method_returning_enumerable() {
         __createCount = 0;
 
-        ParsedArguments arguments = new Build().RecognizeClass(EnumerableController.class).setFactory(new ObjectFactory() {
+        ParsedArguments arguments = new Build().recognizeClass(EnumerableController.class).setFactory(new ObjectFactory() {
 
             @Override
             public Object build(Class c) {

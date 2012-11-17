@@ -43,8 +43,7 @@ public class MethodInfoFinder {
     public Method Match(List<Method> methods, Class returnType, String name, List<Class> parameters) {
         // var retv = Find (methods, returnType, name, parameters);
         // return retv.FirstOrDefault ();
-        return null;
-
+        throw new RuntimeException("not implemented");
     }
 
     public Method MatchGet(List<Method> methods, String name, Class returnType, List<Class> parameters) {
@@ -62,7 +61,7 @@ public class MethodInfoFinder {
         //       return new MethodInfoOrProperty(methodInfo, propertyInfo);
         //    }
         //     else return null;
-        return null;
+        throw new RuntimeException("not implemented");
 
     }
 

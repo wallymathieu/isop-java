@@ -19,20 +19,20 @@ public class ListUtils {
         }
         return a1;
     }
-    public static <T> List<T> Union(T[] a, T[] b) {
-        return Union(ToList(a),ToList(b));
+    public static <T> List<T> union(T[] a, T[] b) {
+        return union(ToList(a),ToList(b));
     }
-    public static <T> List<T> Union(List<T> a, List<T> b) {
+    public static <T> List<T> union(List<T> a, List<T> b) {
        Set<T> set = new HashSet<T>();
          
         set.addAll(a);
         set.addAll(b);
         return new ArrayList<T>(set);
     }
-    public static <T> List<T> Intersect(T[] list1, T[] list2) {
-        return Intersect(ToList(list1), ToList(list2));
+    public static <T> List<T> intersect(T[] list1, T[] list2) {
+        return intersect(ToList(list1), ToList(list2));
     }
-    public static <T> List<T> Intersect(Collection<T> list1, Collection<T> list2) {
+    public static <T> List<T> intersect(Collection<T> list1, Collection<T> list2) {
         List<T> list = new ArrayList<T>();
 
         for (T t : list1) {

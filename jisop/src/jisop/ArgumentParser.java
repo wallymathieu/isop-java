@@ -43,7 +43,7 @@ public class ArgumentParser {
 
     public ParsedArguments Parse(String[] arguments) {
         ArgumentLexer lexer = ArgumentLexer.lex(arguments);
-        ParsedArguments parsedArguments = Parse(lexer, arguments);
+        ParsedArguments parsedArguments = parse(lexer, arguments);
         Collection<ArgumentWithOptions> unMatchedRequiredArguments = parsedArguments.UnMatchedRequiredArguments();
 
         if (unMatchedRequiredArguments.size() > 0) {
@@ -59,7 +59,7 @@ public class ArgumentParser {
         return parsedArguments;
     }
 
-    public ParsedArguments Parse(ArgumentLexer lex, String[] arguments) {
+    public ParsedArguments parse(ArgumentLexer lex, String[] arguments) {
         LinkedList<Integer> recognizedIndexes = new LinkedList<Integer>();
         PeekCollection<Token> lexer = new PeekCollection<Token>(lex);
         LinkedList<RecognizedArgument> recognized = new LinkedList<RecognizedArgument>();

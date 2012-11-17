@@ -12,7 +12,7 @@ public class Transform {
  
         // Lexer -> 
         // Arg(ControllerName),Param(..),.. -> Arg(ControllerName),Arg('Index'),... 
-        public ArgumentLexer Rewrite(ArgumentLexer tokens)
+        public ArgumentLexer rewrite(ArgumentLexer tokens)
         {
             //"--command"
             if (tokens.size() >= 2 

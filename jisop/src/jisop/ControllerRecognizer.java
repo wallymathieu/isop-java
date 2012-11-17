@@ -49,8 +49,8 @@ class ControllerRecognizer {
     }
 
     boolean recognize(String[] arg) {
-        ArgumentLexer lexer = _transform.Rewrite(ArgumentLexer.lex(arg));
-        return null != FindMethodInfo(lexer);
+        ArgumentLexer lexer = _transform.rewrite(ArgumentLexer.lex(arg));
+        return null != findMethodInfo(lexer);
     }
 
     private abstract class PropertyInfo {
@@ -105,7 +105,7 @@ class ControllerRecognizer {
                     recognizers.add(arg);
                 }
             } else {
-                throw new RuntimeException();
+                throw new RuntimeException("");
                 //var recognizedArgument =  parsedArguments.RecognizedArguments.First(
                 //    a => a.Argument.ToUpperInvariant().Equals(paramInfo.Name.ToUpperInvariant()));
                 //parameters.Add( ConvertFrom (recognizedArgument, paramInfo.ParameterType));
@@ -115,16 +115,16 @@ class ControllerRecognizer {
     }
 
     ParsedMethod parse(String[] arg) {
-        ArgumentLexer lexer = _transform.Rewrite(ArgumentLexer.lex(arg));
+        ArgumentLexer lexer = _transform.rewrite(ArgumentLexer.lex(arg));
 
-        Method methodInfo = FindMethodInfo(lexer);
+        Method methodInfo = findMethodInfo(lexer);
 
         List<ArgumentWithOptions> argumentRecognizers = GetRecognizers(methodInfo);
 
         ArgumentParser parser = new ArgumentParser(argumentRecognizers);
-        ParsedArguments parsedArguments = parser.Parse(lexer, arg);
+        ParsedArguments parsedArguments = parser.parse(lexer, arg);
         Object instance = _factory.build(type);
-        return Parse(instance, methodInfo, parsedArguments);
+        return parse(instance, methodInfo, parsedArguments);
     }
 
     private Object newInstance(Class<?> type, Object instance) {
@@ -174,7 +174,7 @@ class ControllerRecognizer {
                         RecognizedArgument recognizedArgument = parsedArguments.withName(prop.name);
 
 
-                        prop.setValue(obj, ConvertFrom(recognizedArgument, prop.propertyType));
+                        prop.setValue(obj, convertFrom(recognizedArgument, prop.propertyType));
 
                     }
                     parameters.add(obj);
@@ -195,7 +195,7 @@ class ControllerRecognizer {
         return parameters;
     }
 
-    public ParsedMethod Parse(Object instance, Method methodInfo, ParsedArguments parsedArguments) {
+    public ParsedMethod parse(Object instance, Method methodInfo, ParsedArguments parsedArguments) {
         Collection<ArgumentWithOptions> unMatchedRequiredArguments = parsedArguments.UnMatchedRequiredArguments();
         if (unMatchedRequiredArguments.size() > 0) {
             throw new MissingArgumentException();
@@ -218,7 +218,7 @@ class ControllerRecognizer {
         return p;
     }
 
-    private static Method FindMethod(List<Method> methods, String methodName, List<Token> lexer) {
+    private static Method findMethod(List<Method> methods, String methodName, List<Token> lexer) {
         List<Method> potential = new LinkedList<Method>();
         for (int i = 0; i < methods.size(); i++) {
             Method m = methods.get(i);
@@ -257,30 +257,30 @@ class ControllerRecognizer {
         return null;
     }
 
-    public String ClassName() {
+    public String className() {
         return type.getSimpleName().replace("Controller", "");
     }
 
-    public List<Method> GetMethods() {
+    public List<Method> getMethods() {
         MethodInfoFinder m = new MethodInfoFinder();
         return m.WithoutName(m.GetOwnPublicMethods(type), "help");
 
     }
 
-    private Method FindMethodInfo(List<Token> arg) {
+    private Method findMethodInfo(List<Token> arg) {
         if (arg.size() <= 2) {
             return null;
         }
-        boolean foundClassName = ClassName().equalsIgnoreCase(arg.get(0).Value);
+        boolean foundClassName = className().equalsIgnoreCase(arg.get(0).Value);
         if (foundClassName) {
             String methodName = arg.get(1).Value;
-            Method methodInfo = FindMethod(GetMethods(), methodName, arg);
+            Method methodInfo = findMethod(getMethods(), methodName, arg);
             return methodInfo;
         }
         return null;
     }
 
-    private Object ConvertFrom(RecognizedArgument arg1, Class parameterInfo) {
+    private Object convertFrom(RecognizedArgument arg1, Class parameterInfo) {
         try {
             return _typeConverter.convert(parameterInfo, arg1.value);
         } catch (Exception e) {

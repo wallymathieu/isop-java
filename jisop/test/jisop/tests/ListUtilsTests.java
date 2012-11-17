@@ -19,7 +19,7 @@ public class ListUtilsTests {
         Integer[] expected = {1,2,3};
         Integer[] set1={1,2};
         Integer[] set2={2,3};
-        Integer[] result = ListUtils.Union(set1, set2).toArray(new Integer[0]);
+        Integer[] result = ListUtils.union(set1, set2).toArray(new Integer[0]);
         assertArrayEquals(expected, result);
     }
     
@@ -28,7 +28,7 @@ public class ListUtilsTests {
         Integer[] expected = {2};
         Integer[] set1={1,2};
         Integer[] set2={2,3};
-        Integer[] result = ListUtils.Intersect(set1, set2).toArray(new Integer[0]);
+        Integer[] result = ListUtils.intersect(set1, set2).toArray(new Integer[0]);
         assertArrayEquals(expected, result);
     }
 
