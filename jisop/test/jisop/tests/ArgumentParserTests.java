@@ -4,14 +4,10 @@ package jisop.tests;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import java.io.PrintStream;
-import java.rmi.server.LogStream;
 import java.util.Collection;
-import java.util.LinkedList;
-import java.util.List;
 import jisop.*;
-import org.junit.*;
 import static org.junit.Assert.*;
+import org.junit.Test;
 
 /**
  *
@@ -308,7 +304,6 @@ public class ArgumentParserTests {
 
         assertEquals(0, arguments.unRecognizedArguments.size());
         OutputStream out = new OutputStream() {
-
             public void write(int b) {
             }
         };
