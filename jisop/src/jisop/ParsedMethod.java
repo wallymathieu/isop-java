@@ -54,10 +54,12 @@ public class ParsedMethod extends ParsedArguments {
                 writer.write((String) retval);
             } else if (retval instanceof Collection) {
                 for (Object item : (Collection) retval) {
-                    writer.write((String) retval);
+                    writer.write((String) retval);  
                 }
             } else if (retval.getClass().isArray()){
-                throw new RuntimeException("not implemented");
+                for(Object item : ((Object[])retval)){
+                    writer.write(item.toString());  
+                }
             }else{
                 writer.write(retval.toString());
             }

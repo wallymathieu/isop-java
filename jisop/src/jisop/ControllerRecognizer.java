@@ -96,8 +96,8 @@ class ControllerRecognizer {
         return props;
     }
 
-    private boolean IsClass(Class<?> p) {
-        return true;
+    private boolean isClass(Class<?> p) {
+        return !p.isPrimitive();
     }
 
     private List<ArgumentWithOptions> getRecognizers(Method method) {
@@ -106,7 +106,7 @@ class ControllerRecognizer {
         List<ArgumentWithOptions> recognizers = new ArrayList<ArgumentWithOptions>();
 
         for (Class<?> paramInfo : parameterInfos) {
-            if (IsClass(paramInfo)) {
+            if (isClass(paramInfo)) {
                 //var obj = Activator.CreateInstance(paramInfo.ParameterType);
                 for (PropertyInfo prop : getProperties(paramInfo)) {
                     ArgumentWithOptions arg = new ArgumentWithOptions(
@@ -176,7 +176,7 @@ class ControllerRecognizer {
         List<Object> parameters = new ArrayList<Object>();
 
         for (Class<?> paramInfo : parameterInfos) {
-            if (IsClass(paramInfo)) {
+            if (isClass(paramInfo)) {
                 try {
                     Object obj = newInstance(paramInfo,instance);
                     for (PropertyInfo prop : getProperties(paramInfo)) {
@@ -217,7 +217,6 @@ class ControllerRecognizer {
         List<Object> recognizedActionParameters = getParametersForMethod(instance, methodInfo, parsedArguments);
 
         parsedArguments.unRecognizedArguments = withoutIndex0to1( parsedArguments.unRecognizedArguments);
-//                .Where(unrecognized=>unrecognized.Index>=1); //NOTE: should be different!
 
         ParsedMethod p = new ParsedMethod(parsedArguments);
         p.recognizedAction = methodInfo;
@@ -277,7 +276,7 @@ class ControllerRecognizer {
     }
 
     private Method findMethodInfo(List<Token> arg) {
-        if (arg.size() <= 2) {
+        if (arg.size() < 2) {
             return null;
         }
         boolean foundClassName = className().equalsIgnoreCase(arg.get(0).Value);

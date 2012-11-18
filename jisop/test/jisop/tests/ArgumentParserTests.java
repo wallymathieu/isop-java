@@ -225,8 +225,8 @@ public class ArgumentParserTests {
             public void write(int b) {
             }
         };
-        ParsedArguments arguments = new Build().setFactory(f).recognizeClass(MyController.class) //.Parameter("beta", arg => countArg++)
-                .parse(new String[]{"My", "Action", "--param2", "value2", "--param3", "3", "--param1", "value1", "--param4", "3.4", "--beta"});
+        ParsedArguments arguments = new Build().setFactory(f).recognizeClass(MyController.class)
+                .parse(new String[]{"My", "Action", "--param2", "value2", "--param3", "3", "--param1", "value1", "--param4", "3.4"});
         assertEquals(0, arguments.unRecognizedArguments.size());
         arguments.invoke(out);
         assertEquals(1, __count);
@@ -290,7 +290,7 @@ public class ArgumentParserTests {
     public void It_understands_method_returning_enumerable() {
         __createCount = 0;
 
-        ParsedArguments arguments = new Build().recognizeClass(EnumerableController.class).setFactory(new ObjectFactory() {
+        ParsedArguments arguments = new Build().setFactory(new ObjectFactory() {
 
             @Override
             public Object build(Class c) {
@@ -304,22 +304,22 @@ public class ArgumentParserTests {
                     }
                 };
             }
-        }).parse(new String[]{"Enumerable", "Return"});
+        }).recognizeClass(EnumerableController.class).parse(new String[]{"enumerable", "return"});
 
         assertEquals(0, arguments.unRecognizedArguments.size());
-        arguments.invoke(null);
+        OutputStream out = new OutputStream() {
+
+            public void write(int b) {
+            }
+        };
+        arguments.invoke(out);
         assertEquals(1, __createCount);
     }
 
-    class EnumerableController {
-        //public Func<Object> OnEnumerate;
-
+    public class EnumerableController {
         public int Length;
 
         public String[] Return() {
-            /*
-             * for (int i = 0; i < Length; i++) { yield return OnEnumerate(); }
-             */
             return null;
         }
     }
