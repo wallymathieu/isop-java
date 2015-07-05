@@ -1,5 +1,7 @@
 package jisop.command_line.parse;
 
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
+
 import java.io.OutputStream;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -64,5 +66,9 @@ public class ParsedArguments {
                 unRecognizedArguments.stream()
                         .filter(arg->arg.index>=2)
                         .collect(Collectors.toList());
+    }
+
+    public void assertFailOnUnMatched() {
+        throw new NotImplementedException();
     }
 }

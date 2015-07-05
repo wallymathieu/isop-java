@@ -17,22 +17,18 @@ import java.util.List;
  */
 public class ArgumentParser {
 
-    private final List<ArgumentWithOptions> _argumentWithOptions;
+    private final Collection<ArgumentWithOptions> _argumentWithOptions;
 
-    public ArgumentParser(List<ArgumentWithOptions> argumentWithOptions) {
+    public ArgumentParser(Collection<ArgumentWithOptions> argumentWithOptions) {
         _argumentWithOptions = argumentWithOptions;
     }
 
     private ArgumentWithOptions argumentWithOptionsThatAccepts(Integer index, String value) {
-        // var argumentWithOptions = _argumentWithOptions
-        //                       .SingleOrDefault(argopt => argopt.Argument.Accept(current.Index,current.Value));
-        for (int i = 0; i < _argumentWithOptions.size(); i++) {
-            ArgumentWithOptions arg =_argumentWithOptions.get(i);
-            if (arg.argument.accept(index, value)) {
-                return arg;
-            }
-        }
-        return null;
+        return _argumentWithOptions
+                .stream()
+                .filter(arg->arg.argument.accept(index, value))
+                .findFirst()
+                .orElseGet(()->null);
     }
 
     private Collection<UnrecognizedArgument> unrecoqnizedArguments(String[] arguments, LinkedList<Integer> recognizedIndexes) {

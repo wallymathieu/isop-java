@@ -1,6 +1,8 @@
 package jisop.api;
 
 import jisop.*;
+import jisop.command_line.ControllerRecognizer;
+import jisop.command_line.parse.ArgumentParser;
 import jisop.command_line.parse.ParsedArguments;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
@@ -22,7 +24,23 @@ public class ActionControllerExpression {
     }
     public ParsedArguments Parameters(Dictionary<String, String> arg)
     {
-        throw new NotImplementedException();
+        ArgumentParser argumentParser = new ArgumentParser(build.getGlobalParameters());
+        ParsedArguments parsedArguments = argumentParser.Parse(arg);
+        if (build.getControllerRecognizers().stream()
+                .anyMatch(a -> true))
+        {
+            ControllerRecognizer controllerRecognizer = build.getControllerRecognizers().stream()
+                    .filter(recognizer -> recognizer.recognize(new String[]{controllerName, actionName}))
+                    .findFirst()
+                    .get();
+            if (null != controllerRecognizer)
+            {
+                return controllerRecognizer.parseArgumentsAndMerge(actionName, arg,
+                        parsedArguments);
+            }
+        }
+        parsedArguments.assertFailOnUnMatched();
+        return parsedArguments;
     }
     /// <summary>
     ///

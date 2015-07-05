@@ -25,7 +25,7 @@ public class Build {
 
     private final List<ArgumentWithOptions> _argumentRecognizers;
     private final List<ControllerRecognizer> _controllerRecognizers;
-    boolean _allowInferParameter;
+    public boolean _allowInferParameter; // TODO:FIX
     private BiFunction<Class,String,Object> typeConverter;
     private final TypeContainer _container = new TypeContainer();
     public Build() {

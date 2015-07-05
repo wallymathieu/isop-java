@@ -32,6 +32,10 @@ public class ControllerRecognizer {
     private BiFunction<Class,String,Object> _typeConverter;
     private Function<Class,Object> _factory;
 
+    public ParsedArguments parseArgumentsAndMerge(String actionName, Dictionary<String, String> arg, ParsedArguments parsedArguments) {
+        throw new NotImplementedException();
+    }
+
     private class DefaultTypeConverter implements BiFunction<Class,String,Object>
     {
         public Object apply(Class cls, String value) {
