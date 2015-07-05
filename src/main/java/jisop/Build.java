@@ -1,8 +1,21 @@
 package jisop;
 
+import jisop.command_line.lex.ArgumentLexer;
+import jisop.command_line.ControllerRecognizer;
+import jisop.command_line.ParsedMethod;
+import jisop.command_line.parse.ArgumentParameter;
+import jisop.command_line.parse.ArgumentParser;
+import jisop.command_line.parse.ArgumentWithOptions;
+import jisop.command_line.parse.ParsedArguments;
+import jisop.domain.ArgumentAction;
+import jisop.domain.ObjectFactory;
+import jisop.domain.TypeContainer;
+import jisop.domain.TypeConverter;
+
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.function.Function;
 
 /**
  *
@@ -12,6 +25,7 @@ public class Build {
 
     private final List<ArgumentWithOptions> _argumentRecognizers;
     private final List<ControllerRecognizer> _controllerRecognizers;
+    boolean _allowInferParameter;
     private TypeConverter typeConverter;
     private final TypeContainer _container = new TypeContainer();
     public Build() {
@@ -74,7 +88,7 @@ public class Build {
 
     public Build recognize(Object arg) {
         _controllerRecognizers.add(new ControllerRecognizer(arg.getClass(),_container));
-        _container.instances.put(arg.getClass(), arg);
+        _container.add(arg.getClass(), arg);
         return this;
     }
 
@@ -95,6 +109,10 @@ public class Build {
      */
 
     public Build setFactory(ObjectFactory objectFactory) {
+        _container.setFactory(objectFactory);
+        return this;
+    }
+    public Build setFactory(Function<Class,Object> objectFactory) {
         _container.setFactory(objectFactory);
         return this;
     }

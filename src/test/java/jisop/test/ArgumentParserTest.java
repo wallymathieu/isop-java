@@ -4,16 +4,28 @@ package jisop.test;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
+import java.util.function.*;
+import java.util.stream.Stream;
+
 import jisop.*;
 import static org.junit.Assert.*;
-import org.junit.Test;
 
+import jisop.command_line.ControllerRecognizer;
+import jisop.command_line.parse.*;
+import jisop.domain.ArgumentAction;
+import jisop.domain.ObjectFactory;
+import jisop.test.fake_controllers.*;
+import org.junit.Test;
+import jisop.test.helpers.*;
 /**
  *
  * @author mathieu
  */
-public class ArgumentParserTest {
+public class ArgumentParserTest extends Base {
 
     public ArgumentParserTest() {
     }
@@ -94,10 +106,24 @@ public class ArgumentParserTest {
         };
         assertArrayEquals(expected, unRecognizedArguments.toArray());
     }
+    //@Test TODO: Not implement!
+    public void It_can_infer_ordinal_usage_of_named_parameters()
+    {
+        Collection<RecognizedArgument> arguments = new Build()
+                .parameter("beta|b=")
+                .parameter("alpha|a=")
+                .parse(new String[] { "test", "value" })
+                .recognizedArguments;
+        assertArrayEquals(new String[]{"test", "value" },
+                arguments.stream().map(arg->arg.value).toArray());
+    }
 
     @Test
     public void It_wont_report_matched_parameters() {
-        Collection<UnrecognizedArgument> arguments = new Build().parameter("beta").parse(new String[]{"--beta", "value"}).unRecognizedArguments;
+        Collection<UnrecognizedArgument> arguments = new Build()
+                .parameter("beta")
+                .parse(new String[]{"--beta", "value"})
+                .unRecognizedArguments;
         assertEquals(0, arguments.size());
     }
 
@@ -127,7 +153,7 @@ public class ArgumentParserTest {
 
         ObjectFactory factory = new ObjectFactory() {
 
-            public Object build(Class c) {
+            public Object apply(Class c) {
                 assertEquals(MyController.class, c);
                 return new MyController() {
 
@@ -153,6 +179,122 @@ public class ArgumentParserTest {
         assertEquals(1, __count);
     }
 
+    //@Test TODO: Not implement!
+    public void It_can_parse_class_and_method_and_execute_with_ordinal_syntax()
+    {
+        Counter count = new Counter();
+        Function<Class, Object> factory = (Class t) ->
+        {
+            assertEquals(MyController.class,t);
+            return
+                    (Object)
+                            new MyController().SetOnAction((p1) -> toString(count.next()) );
+        };
+        ParsedArguments arguments = new Build()
+            .recognizeClass(MyController.class)
+            .setFactory(factory)
+            .parse(new String[]{"My", "Action", "value1", "value2", "3", "3.4"});
+
+        assertEquals(0, arguments.unRecognizedArguments.size());
+        OutputStream out = new OutputStream() {
+            public void write(int b) {
+            }
+        };
+        arguments.invoke(out);
+        assertEquals(1, count.getCount());
+    }
+
+    //@Test TODO: Not implement!
+    public void It_can_parse_class_and_method_and_knows_whats_required()
+    {
+        Function<Class, Object> factory = (Class t) ->
+        {
+            assertEquals(MyController.class, t);
+            return
+                    (Object)
+                            new MyController().SetOnAction((p1) -> "" );
+        };
+        Build build = new Build()
+                .recognizeClass(MyController.class)
+                .setFactory(factory);
+
+        ControllerRecognizer first = build.getControllerRecognizers().iterator().next();
+        List<ArgumentWithOptions> recognizers = first.getRecognizers("Action");
+        assertArrayEquals(
+                dictionaryDescriptionToKv("[param1, True], [param2, True], [param3, True], [param4, True]", s -> Boolean.parseBoolean(s)).toArray(),
+                recognizers.stream().map(r -> toSimpleEntry(r.Description, r.Required)).toArray());
+    }
+
+    //@Test TODO: Not implement!
+    public void It_can_parse_class_and_method_and_knows_whats_not_required()
+    {
+        Function<Class, Object> factory = (Class t) ->
+        {
+            assertEquals(MyController.class, t);
+            return
+                    (Object)
+                            new MyOptionalController().SetOnAction((p1) -> "" );
+        };
+        Build build = new Build()
+                .recognizeClass(MyOptionalController.class)
+                .setFactory(factory);
+
+        ControllerRecognizer first = build.getControllerRecognizers().iterator().next();
+        List<ArgumentWithOptions> recognizers = first.getRecognizers("Action");
+        assertArrayEquals(
+                dictionaryDescriptionToKv("[param1, True], [param2, True], [param3, True], [param4, True]", s -> Boolean.parseBoolean(s)).toArray(),
+                recognizers.stream().map(r-> toSimpleEntry(r.Description,r.Required)).toArray() );
+    }
+
+    //@Test TODO: Not implement!
+    public void It_can_parse_class_and_method_and_executes_default_with_the_default_values()
+    {
+        List<MyOptionalController.Param> parameters=new ArrayList<>();
+        Function<Class, Object> factory = (Class t) ->
+        {
+            assertEquals(MyOptionalController.class, t);
+            return
+                    (Object)
+                            new MyOptionalController().SetOnAction((p1) ->{ parameters.add(p1); return "";} );
+        };
+        ParsedArguments arguments = new Build()
+                .recognizeClass(MyOptionalController.class)
+                .setFactory(factory)
+                .parse(new String[]{"MyOptional", "Action", "--param1", "value1"});
+
+        OutputStream out = new OutputStream() {
+            public void write(int b) {
+            }
+        };
+        arguments.invoke(out);
+        assertArrayEquals(new Object[]{"value1", null, null, 1 }, parameters.get(0).toArray());
+    }
+
+    //@Test TODO: Not implement!
+    public void It_can_parse_class_and_method_and_executes_default_with_the_default_values_when_using_ordinal_syntax()
+    {
+        List<MyOptionalController.Param> parameters=new ArrayList<>();
+        Function<Class, Object> factory = (Class t) ->
+        {
+            assertEquals(MyOptionalController.class, t);
+            return
+                    (Object)
+                            new MyOptionalController().SetOnAction((p1) ->{ parameters.add(p1); return "";} );
+        };
+        ParsedArguments arguments = new Build()
+                .recognizeClass(MyOptionalController.class)
+                .setFactory(factory)
+                .parse(new String[]{"MyOptional", "Action", "value1"});
+
+        OutputStream out = new OutputStream() {
+            public void write(int b) {
+            }
+        };
+        arguments.invoke(out);
+        assertArrayEquals(new Object[]{"value1", null, null, 1}, parameters.get(0).toArray());
+    }
+
+
     @Test
     public void It_can_parse_class_and_method_and_fail() {
         Build builder = new Build().recognizeClass(MyController.class);
@@ -175,7 +317,7 @@ public class ArgumentParserTest {
     public void It_can_parse_class_and_method_and_fail_because_of_type_conversion() {
         Build builder = new Build().setFactory(new ObjectFactory() {
 
-            public Object build(Class c) {
+            public Object apply(Class c) {
                 return new SingleIntAction();
             }
         }).recognizeClass(SingleIntAction.class);
@@ -202,7 +344,7 @@ public class ArgumentParserTest {
         __count = 0;
         ObjectFactory f = new ObjectFactory() {
 
-            public Object build(Class c) {
+            public Object apply(Class c) {
                 assertEquals(MyController.class, c);
                 return new MyController() {
 
@@ -233,7 +375,7 @@ public class ArgumentParserTest {
 
         ParsedArguments arguments = new Build().setFactory(new ObjectFactory() {
 
-            public Object build(Class c) {
+            public Object apply(Class c) {
                 assertEquals(WithIndexController.class, c);
                 return new WithIndexController() {
 
@@ -280,14 +422,14 @@ public class ArgumentParserTest {
         __createCount = 0;
 
         ParsedArguments arguments = new Build().setFactory(new ObjectFactory() {
-            public Object build(Class c) {
+            public Object apply(Class c) {
                 assertEquals(EnumerableController.class, c);
                 __createCount++;
                 return new EnumerableController() {
 
                     @Override
-                    public String[] Return() {
-                        return new String[]{"1", "2"};
+                    public Stream<String> Return() {
+                        return Arrays.asList(new String[]{"1", "2"}).stream();
                     }
                 };
             }
@@ -305,7 +447,7 @@ public class ArgumentParserTest {
     public class EnumerableController {
         public int Length;
 
-        public String[] Return() {
+        public Stream<String> Return() {
             return null;
         }
     }

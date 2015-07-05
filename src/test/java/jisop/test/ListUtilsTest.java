@@ -3,9 +3,11 @@
  * and open the template in the editor.
  */
 package jisop.test;
-import java.util.Collection;
-import jisop.*;
+import jisop.infrastructure.ListUtils;
 import org.junit.*;
+
+import java.util.Arrays;
+
 import static org.junit.Assert.*;
 
 /**
@@ -17,9 +19,9 @@ public class ListUtilsTest {
     @Test
     public void Union() {
         Integer[] expected = {1,2,3};
-        Integer[] set1={1,2};
+        Integer[] set1= {1,2};
         Integer[] set2={2,3};
-        Integer[] result = ListUtils.union(set1, set2).toArray(new Integer[0]);
+        Integer[] result = ListUtils.union(Arrays.asList(set1), Arrays.asList(set2)).toArray(new Integer[0]);
         assertArrayEquals(expected, result);
     }
     

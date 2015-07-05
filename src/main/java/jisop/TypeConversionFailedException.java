@@ -10,12 +10,12 @@ package jisop;
  */
 public class TypeConversionFailedException extends RuntimeException {
 
-    TypeConversionFailedException(){}
-    
-    TypeConversionFailedException(String message) {
+    public TypeConversionFailedException(){}
+
+    public TypeConversionFailedException(String message) {
         super(message);
     }
-    TypeConversionFailedException(String message, Exception e) {
+    public TypeConversionFailedException(String message, Exception e) {
         super(message,e);
     }
 }

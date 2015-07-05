@@ -6,10 +6,10 @@ package jisop.test;
  * To change this template, choose Tools | Templates and open the template in
  * the editor.
  */
-import jisop.ArgumentLexer;
-import jisop.PeekCollection;
-import jisop.Token;
-import jisop.TokenType;
+import jisop.command_line.lex.ArgumentLexer;
+import jisop.infrastructure.PeekCollection;
+import jisop.command_line.lex.Token;
+import jisop.command_line.lex.TokenType;
 import org.junit.*;
 import static org.junit.Assert.*;
 /**
@@ -31,7 +31,7 @@ public class ArgumentLexerTest {
     }
 
     @Test
-    public void It_can_tokenize_parameter() {
+    public void It_can_tokenize_parameter_minus_minus() {
         ArgumentLexer lexer = ArgumentLexer.lex(new String[]{"--parameter"});
 
         assertArrayEquals(new Token[]{
@@ -40,7 +40,7 @@ public class ArgumentLexerTest {
     }
 
     @Test
-    public void It_can_tokenize_parameter2() {
+    public void It_can_tokenize_parameter_slash() {
         ArgumentLexer lexer = ArgumentLexer.lex(new String[]{"/parameter"});
         assertArrayEquals(new Token[]{
                     new Token("parameter", TokenType.Parameter, 0)},
@@ -57,13 +57,22 @@ public class ArgumentLexerTest {
     }
 
     @Test
-    public void It_can_tokenize_parametervalue2() {
-        ArgumentLexer lexer = ArgumentLexer.lex(new String[]{"--parameter=parametervalue"});
+    public void It_can_tokenize_parametervalue_slash_and_equals() {
+        ArgumentLexer lexer = ArgumentLexer.lex(new String[]{"/parameter=parametervalue"});
         assertArrayEquals(new Token[]{
                     new Token("parameter", TokenType.Parameter, 0),
                     new Token("parametervalue", TokenType.ParameterValue, 1)},
                 lexer.toArray());
 
+    }
+
+    @Test
+    public void It_can_tokenize_parametervalue_minus_minus_and_equals() {
+        ArgumentLexer lexer = ArgumentLexer.lex(new String[]{"--parameter=parametervalue"});
+        assertArrayEquals(new Token[]{
+                        new Token("parameter", TokenType.Parameter, 0),
+                        new Token("parametervalue", TokenType.ParameterValue, 1)},
+                lexer.toArray());
     }
 
     @Test
