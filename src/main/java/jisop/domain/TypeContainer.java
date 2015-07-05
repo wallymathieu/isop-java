@@ -9,7 +9,7 @@ import java.util.logging.Logger;
  *
  * @author mathieu
  */
-public class TypeContainer implements ObjectFactory {
+public class TypeContainer implements Function<Class,Object> {
     public TypeContainer()
     {
         instances= new HashMap<Class, Object>();

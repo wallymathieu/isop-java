@@ -1,20 +1,20 @@
 package jisop;
 
-import jisop.command_line.lex.ArgumentLexer;
+import jisop.api.ControllerExpression;
 import jisop.command_line.ControllerRecognizer;
 import jisop.command_line.ParsedMethod;
+import jisop.command_line.lex.ArgumentLexer;
 import jisop.command_line.parse.ArgumentParameter;
 import jisop.command_line.parse.ArgumentParser;
 import jisop.command_line.parse.ArgumentWithOptions;
 import jisop.command_line.parse.ParsedArguments;
-import jisop.domain.ArgumentAction;
-import jisop.domain.ObjectFactory;
 import jisop.domain.TypeContainer;
-import jisop.domain.TypeConverter;
 
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.function.BiFunction;
+import java.util.function.Consumer;
 import java.util.function.Function;
 
 /**
@@ -26,7 +26,7 @@ public class Build {
     private final List<ArgumentWithOptions> _argumentRecognizers;
     private final List<ControllerRecognizer> _controllerRecognizers;
     boolean _allowInferParameter;
-    private TypeConverter typeConverter;
+    private BiFunction<Class,String,Object> typeConverter;
     private final TypeContainer _container = new TypeContainer();
     public Build() {
         _controllerRecognizers = new LinkedList<ControllerRecognizer>();
@@ -43,9 +43,9 @@ public class Build {
     }
 
     public Build parameter(String argument,
-            boolean required,
-            String description,
-            ArgumentAction action) {
+                           boolean required,
+                           String description,
+                           Consumer<String> action) {
         _argumentRecognizers.add(new ArgumentWithOptions(ArgumentParameter.parse(argument),
                 required, description, action));
         return this;
@@ -103,15 +103,7 @@ public class Build {
     public Collection<ArgumentWithOptions> getGlobalParameters() {
         return _argumentRecognizers;
     }
-    /*
-     * public Func<Type, object> GetFactory() { return
-     * _container.CreateInstance; }
-     */
 
-    public Build setFactory(ObjectFactory objectFactory) {
-        _container.setFactory(objectFactory);
-        return this;
-    }
     public Build setFactory(Function<Class,Object> objectFactory) {
         _container.setFactory(objectFactory);
         return this;
@@ -125,5 +117,9 @@ public class Build {
             }
         }
         return null;
+    }
+
+    public ControllerExpression controller(String controllerName) {
+        return new ControllerExpression(controllerName, this);
     }
 }

@@ -1,13 +1,12 @@
 package jisop.command_line;
 
-import jisop.*;
+import jisop.MissingArgumentException;
+import jisop.TypeConversionFailedException;
 import jisop.command_line.lex.ArgumentLexer;
 import jisop.command_line.lex.Token;
 import jisop.command_line.lex.TokenType;
 import jisop.command_line.lex.Transform;
 import jisop.command_line.parse.*;
-import jisop.domain.ObjectFactory;
-import jisop.domain.TypeConverter;
 import jisop.infrastructure.MethodInfoFinder;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
@@ -16,6 +15,8 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.*;
+import java.util.function.BiFunction;
+import java.util.function.Function;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -28,12 +29,12 @@ public class ControllerRecognizer {
     private Class type;
     public boolean ignoreGlobalUnMatchedParameters = false;
     Transform _transform = new Transform();
-    private TypeConverter _typeConverter;
-    private ObjectFactory _factory;
+    private BiFunction<Class,String,Object> _typeConverter;
+    private Function<Class,Object> _factory;
 
-    private class DefaultTypeConverter implements TypeConverter
+    private class DefaultTypeConverter implements BiFunction<Class,String,Object>
     {
-        public Object convert(Class cls, String value) {
+        public Object apply(Class cls, String value) {
             if (cls==String.class){
                 return value;
             }
@@ -50,7 +51,7 @@ public class ControllerRecognizer {
         }
     }
 
-    public ControllerRecognizer(Class arg, ObjectFactory factory) {
+    public ControllerRecognizer(Class arg, Function<Class,Object> factory) {
         type = arg;
         _typeConverter=new DefaultTypeConverter();
         if (null==factory){
@@ -296,7 +297,7 @@ public class ControllerRecognizer {
 
     private Object convertFrom(RecognizedArgument arg1, Class parameterInfo) {
         try {
-            return _typeConverter.convert(parameterInfo, arg1.value);
+            return _typeConverter.apply(parameterInfo, arg1.value);
         } catch (Exception e) {
             throw new TypeConversionFailedException("Parameter: "+parameterInfo.getName()+", value: "+arg1.value, e);
         }

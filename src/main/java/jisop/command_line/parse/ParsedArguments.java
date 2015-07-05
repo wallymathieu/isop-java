@@ -39,7 +39,7 @@ public class ParsedArguments {
     public void invoke(OutputStream out) {
         recognizedArguments.stream()
                 .filter(arg -> null != arg.withOptions.action)
-                .forEach(arg -> arg.withOptions.action.invoke(arg.value));
+                .forEach(arg -> arg.withOptions.action.accept(arg.value));
     }
 
     private boolean isRecognized(ArgumentWithOptions arg) {

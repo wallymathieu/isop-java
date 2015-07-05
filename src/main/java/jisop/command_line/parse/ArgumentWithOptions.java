@@ -1,8 +1,9 @@
 package jisop.command_line.parse;
 
-import jisop.domain.ArgumentAction;
 import jisop.infrastructure.Objects;
 import jisop.infrastructure.StringUtils;
+
+import java.util.function.Consumer;
 
 /**
  * class to enable extensions of the behavior of what is recognized as
@@ -14,13 +15,13 @@ public class ArgumentWithOptions {
 
     public final String Description;
     public final ArgumentParameter argument;
-    public final ArgumentAction action;
+    public final Consumer<String> action;
     public final boolean Required;
 
     public ArgumentWithOptions(ArgumentParameter argument,
             boolean required, 
             String description,
-            ArgumentAction action) {
+            Consumer<String> action) {
         Description = description;
         this.argument = argument;
         Required = required;

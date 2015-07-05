@@ -4,7 +4,6 @@
  */
 package jisop.command_line;
 
-import jisop.domain.ObjectFactory;
 import jisop.command_line.parse.ParsedArguments;
 
 import java.io.IOException;
@@ -14,6 +13,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Collection;
 import java.util.List;
+import java.util.function.Function;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -23,7 +23,7 @@ import java.util.logging.Logger;
  */
 public class ParsedMethod extends ParsedArguments {
 
-    public ObjectFactory factory;
+    public Function<Class,Object> factory;
     public Method recognizedAction;
     public List<Object> recognizedActionParameters;
     public Object recognizedInstance;
