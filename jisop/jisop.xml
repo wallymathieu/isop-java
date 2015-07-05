@@ -119,4 +119,21 @@
   <target name="build.modules" depends="init, clean, compile.module.jisop, compile.module.test" description="build all modules"/>
   
   <target name="all" depends="build.modules" description="build all"/>
+
+  <target name="test" depends="build.modules">
+    <junit printsummary="yes" haltonfailure="yes">
+
+      <classpath>
+        <path refid="test.runtime.module.classpath"/>
+      </classpath>
+
+      <test name="jisop.tests.JisopTestSuite"
+            haltonfailure="yes" outfile="result" >
+        <formatter type="plain"/>
+<!--        <formatter type="xml"/>
+  -->
+      </test>
+
+    </junit>
+  </target>
 </project>

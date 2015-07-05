@@ -16,8 +16,11 @@ import org.junit.runners.Suite;
  * @author mathieu
  */
 @RunWith(Suite.class)
-@Suite.SuiteClasses({jisop.tests.ArgumentParserTests.class, jisop.tests.ArgumentLexerTests.class, 
-    jisop.tests.ListUtilsTests.class, jisop.tests.StringUtilsTests.class})
+@Suite.SuiteClasses({
+        jisop.tests.ArgumentParserTests.class,
+        jisop.tests.ArgumentLexerTests.class,
+        jisop.tests.ListUtilsTests.class,
+        jisop.tests.StringUtilsTests.class})
 public class JisopTestSuite {
 
     @BeforeClass
