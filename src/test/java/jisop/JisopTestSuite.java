@@ -4,6 +4,10 @@
  */
 package jisop;
 
+import jisop.test.ArgumentLexerTest;
+import jisop.test.ArgumentParserTest;
+import jisop.test.ListUtilsTest;
+import jisop.test.StringUtilsTest;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.runner.RunWith;

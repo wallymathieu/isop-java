@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package jisop;
+package jisop.test;
 import java.util.Collection;
 import jisop.*;
 import org.junit.*;
