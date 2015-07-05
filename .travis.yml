@@ -3,5 +3,6 @@ jdk:
       - oraclejdk8
 script:
       - cd jisop
+      - mvn compile
       - mvn test
 
