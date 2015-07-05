@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package jisop.tests;
+package jisop;
 
 import org.junit.Test;
 import static org.junit.Assert.*;
@@ -11,7 +11,7 @@ import jisop.*;
  *
  * @author mathieu
  */
-public class StringUtilsTests {
+public class StringUtilsTest {
     @Test
     public void Test(){
         String[] expected = { "a", "beta","gamma"};

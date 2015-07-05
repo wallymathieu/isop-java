@@ -1,4 +1,4 @@
-package jisop.tests;
+package jisop;
 
 
 

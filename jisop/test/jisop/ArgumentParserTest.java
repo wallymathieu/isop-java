@@ -1,4 +1,4 @@
-package jisop.tests;
+package jisop;
 
 
 
@@ -13,9 +13,9 @@ import org.junit.Test;
  *
  * @author mathieu
  */
-public class ArgumentParserTests {
+public class ArgumentParserTest {
 
-    public ArgumentParserTests() {
+    public ArgumentParserTest() {
     }
 
     @Test
@@ -127,7 +127,6 @@ public class ArgumentParserTests {
 
         ObjectFactory factory = new ObjectFactory() {
 
-            @Override
             public Object build(Class c) {
                 assertEquals(MyController.class, c);
                 return new MyController() {
@@ -176,7 +175,6 @@ public class ArgumentParserTests {
     public void It_can_parse_class_and_method_and_fail_because_of_type_conversion() {
         Build builder = new Build().setFactory(new ObjectFactory() {
 
-            @Override
             public Object build(Class c) {
                 return new SingleIntAction();
             }
@@ -235,7 +233,6 @@ public class ArgumentParserTests {
 
         ParsedArguments arguments = new Build().setFactory(new ObjectFactory() {
 
-            @Override
             public Object build(Class c) {
                 assertEquals(WithIndexController.class, c);
                 return new WithIndexController() {
@@ -266,14 +263,10 @@ public class ArgumentParserTests {
         __count = 0;
 
         new Build().parameter("beta", false, "", new ArgumentAction() {
-
-            @Override
             public void invoke(String value) {
                 __count++;
             }
         }).parameter("alpha", false, "", new ArgumentAction() {
-
-            @Override
             public void invoke(String value) {
                 fail();
             }
@@ -287,8 +280,6 @@ public class ArgumentParserTests {
         __createCount = 0;
 
         ParsedArguments arguments = new Build().setFactory(new ObjectFactory() {
-
-            @Override
             public Object build(Class c) {
                 assertEquals(EnumerableController.class, c);
                 __createCount++;

@@ -1,4 +1,4 @@
-package jisop.tests;
+package jisop;
 
 
 
@@ -16,9 +16,9 @@ import static org.junit.Assert.*;
  *
  * @author mathieu
  */
-public class ArgumentLexerTests {
+public class ArgumentLexerTest {
 
-    public ArgumentLexerTests() {
+    public ArgumentLexerTest() {
     }
 
 
