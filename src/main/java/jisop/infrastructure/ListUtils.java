@@ -5,6 +5,8 @@
 package jisop.infrastructure;
 
 import java.util.*;
+import java.util.function.BiFunction;
+import java.util.stream.Stream;
 
 /**
  *
@@ -40,4 +42,26 @@ public class ListUtils {
         return list;
     }
 
+    public static <T> Stream<T> filterWithIndex(Collection<T> list, BiFunction<T,Integer,Boolean> filter) {
+        return filterWithIndex(new ArrayList<>(list),filter);
+    }
+
+    public static <T> Stream<T> filterWithIndex(List<T> list, BiFunction<T,Integer,Boolean> filter) {
+        return withIndex(list)
+                .stream()
+                .filter(tuple->filter.apply(tuple.value, tuple.key))
+                .map(tuple->tuple.value)
+                ;
+    }
+
+    public static <T> Collection<KeyValuePair<Integer,T>> withIndex(Collection<T> list) {
+        return withIndex(new ArrayList<>(list));
+    }
+    public static <T> Collection<KeyValuePair<Integer,T>> withIndex(List<T> list) {
+        List<KeyValuePair<Integer,T>> retv = new ArrayList<>();
+        for (int i = 0; i < list.size(); i++) {
+            retv.add(new KeyValuePair<Integer, T>(i, list.get(i)));
+        }
+        return retv;
+    }
 }

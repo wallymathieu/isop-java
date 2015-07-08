@@ -1,23 +1,21 @@
 package jisop.infrastructure;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  *
  * @author mathieu
  */
 public class StringUtils {
-
+    public static String join(String delim, Stream<String> array) {
+        return array.collect(Collectors.joining(delim));
+    }
     public static String join(String delim, String[] array) {
-        StringBuilder sb = new StringBuilder();
-        if (array.length==0) return "";
-        sb.append(array[0]);
-        for (int i = 1; i < array.length; i++) {
-            sb.append(delim);
-            sb.append(array[i]);
-        }
-        return sb.toString();
+        return join(delim, Arrays.asList(array).stream());
     }
 
     public static boolean isNullOrEmpty(String val) {

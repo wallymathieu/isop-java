@@ -4,10 +4,7 @@
  */
 package jisop;
 
-import jisop.test.ArgumentLexerTest;
-import jisop.test.ArgumentParserTest;
-import jisop.test.ListUtilsTest;
-import jisop.test.StringUtilsTest;
+import jisop.test.*;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.runner.RunWith;
@@ -18,8 +15,15 @@ import org.junit.runners.Suite;
  * @author mathieu
  */
 @RunWith(Suite.class)
-@Suite.SuiteClasses({ArgumentParserTest.class, ArgumentLexerTest.class,
-    ListUtilsTest.class, StringUtilsTest.class})
+@Suite.SuiteClasses({
+        ArgumentParserTest.class,
+        ArgumentLexerTest.class,
+        ListUtilsTest.class,
+        StringUtilsTest.class,
+        //ReturnValueFormatterTest.class,
+        AlternativeApiTest.class,
+        //ConfigurationTest.class
+})
 public class JisopTestSuite {
 
     @BeforeClass

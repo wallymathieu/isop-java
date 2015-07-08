@@ -1,15 +1,14 @@
 package jisop.command_line.parse;
 
-import jisop.command_line.lex.ArgumentLexer;
 import jisop.command_line.lex.Token;
 import jisop.command_line.lex.TokenType;
+import jisop.domain.Argument;
+import jisop.infrastructure.ArgumentOutOfRangeException;
+import jisop.infrastructure.ListUtils;
 import jisop.infrastructure.PeekCollection;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
-import java.util.Collection;
-import java.util.Dictionary;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  *
@@ -17,106 +16,164 @@ import java.util.List;
  */
 public class ArgumentParser {
 
-    private final Collection<ArgumentWithOptions> _argumentWithOptions;
+    private final Collection<Argument> _argumentWithOptions;
+    private final boolean _allowInferParameter;
 
-    public ArgumentParser(Collection<ArgumentWithOptions> argumentWithOptions) {
+    public ArgumentParser(Collection<Argument> argumentWithOptions, boolean allowInferParameter) {
         _argumentWithOptions = argumentWithOptions;
+        _allowInferParameter = allowInferParameter;
     }
 
-    private ArgumentWithOptions argumentWithOptionsThatAccepts(Integer index, String value) {
-        return _argumentWithOptions
-                .stream()
-                .filter(arg->arg.argument.accept(index, value))
-                .findFirst()
-                .orElseGet(()->null);
-    }
+    public ParsedArguments parse(Map<String, String> arg){
+        List<RecognizedArgument> recognized = new ArrayList<>();
+        List<UnrecognizedArgument> unRecognizedArguments = new ArrayList<>();
+        int index=0;
+        for(String key: arg.keySet()){
+            Argument argumentWithOptions = _argumentWithOptions
+                    .stream()
+                    .filter(argopt->accept(argopt,key))
+                    .findFirst()
+                    .orElse(null);
 
-    private Collection<UnrecognizedArgument> unrecoqnizedArguments(String[] arguments, LinkedList<Integer> recognizedIndexes) {
-        LinkedList<UnrecognizedArgument> unrecognized = new LinkedList<UnrecognizedArgument>();
-        for (int i = 0; i < arguments.length; i++) {
-            if (!recognizedIndexes.contains(new Integer(i)))
-                unrecognized.add(new UnrecognizedArgument(i,arguments[i]));
+
+            if (null == argumentWithOptions)
+            {
+                unRecognizedArguments.add(new UnrecognizedArgument(index++,key));
+                continue;
+            }
+            recognized.add(new RecognizedArgument(
+                    argumentWithOptions,
+                    index++,
+                    key,
+                    arg.get(key)));
+
         }
-        return unrecognized;
-//        .Select((value, i) => 
-        //               new {i, value }) .Where(indexAndValue =>
-        //                !recognizedIndexes.Contains(indexAndValue.i)) .Select(v => new
-        //    UnrecognizedArgument { Index = v.i, Value = v.value })
+        return new ParsedArguments(_argumentWithOptions,recognized,unRecognizedArguments);
     }
+    public ParsedArguments parse(List<Token> lexed, Collection<String> arguments)
+    {
+        List<Integer> recognizedIndexes = new ArrayList<Integer>();
+        PeekCollection<Token> peekTokens = new PeekCollection<Token>(lexed);
+        boolean encounteredParameter = false;
+        List<RecognizedArgument> recognized = new ArrayList<RecognizedArgument>();
+        while (peekTokens.hasMore())
+        {
+            Token current = peekTokens.next();
+            switch (current.tokenType)
+            {
+                case ARGUMENT:
+                {
+                    Argument argumentWithOptions = _argumentWithOptions
+                            .stream()
+                            .filter(argopt -> accept(argopt, current.index, current.value))
+                            .findFirst()
+                            .orElse(null);
 
-    public ParsedArguments Parse(Dictionary<String, String> dic){
-        throw new NotImplementedException();
-    }
-
-    public ParsedArguments Parse(String[] arguments) {
-        ArgumentLexer lexer = ArgumentLexer.lex(arguments);
-        ParsedArguments parsedArguments = parse(lexer, arguments);
-        Collection<ArgumentWithOptions> unMatchedRequiredArguments = parsedArguments.UnMatchedRequiredArguments();
-
-        if (unMatchedRequiredArguments.size() > 0) {
-            throw new RuntimeException("Missing arguments") {
-                /*
-                 * Arguments = unMatchedRequiredArguments .Select(unmatched =>
-                 * new KeyValuePair<string,
-                 * string>(unmatched.Argument.ToString(),
-                 * unmatched.Argument.Help())).ToList()
-                 */
-            };
-        }
-        return parsedArguments;
-    }
-
-    public ParsedArguments parse(ArgumentLexer lex, String[] arguments) {
-        LinkedList<Integer> recognizedIndexes = new LinkedList<Integer>();
-        PeekCollection<Token> lexer = new PeekCollection<Token>(lex);
-        LinkedList<RecognizedArgument> recognized = new LinkedList<RecognizedArgument>();
-        while (lexer.hasMore()) {
-            Token current = lexer.next();
-            switch (current.TokenType) {
-                case Argument: {
-                    ArgumentWithOptions argumentWithOptions =
-                            argumentWithOptionsThatAccepts(current.Index, current.Value);
-                    if (null == argumentWithOptions) {
+                    if (null == argumentWithOptions && !encounteredParameter && _allowInferParameter)
+                    {
+                        InferParameter(recognizedIndexes, recognized, current);
                         continue;
-                    } else {
-
-                        recognizedIndexes.add(current.Index);
-                        recognized.add(new RecognizedArgument(argumentWithOptions, current.Value));
                     }
+
+                    if (null == argumentWithOptions)
+                    {
+                        continue;
+                    }
+
+                    recognizedIndexes.add(current.index);
+                    recognized.add(new RecognizedArgument(
+                            argumentWithOptions,
+                            current.index,
+                            current.value));
                 }
                 break;
-                case Parameter: {
-                    ArgumentWithOptions argumentWithOptions =
-                            argumentWithOptionsThatAccepts(current.Index, current.Value);
-                    if (null == argumentWithOptions) {
+                case PARAMETER:
+                {
+                    encounteredParameter = true;
+                    Argument argumentWithOptions = _argumentWithOptions
+                            .stream()
+                            .filter(argopt->accept(argopt,current.index,current.value))
+                            .findFirst()
+                            .orElse(null)
+                            ;
+                    if (null == argumentWithOptions)
                         continue;
-                    } else {
-                        String value;
-                        recognizedIndexes.add(current.Index);
-                        if (lexer.peekNext() != null && lexer.peekNext().TokenType == TokenType.ParameterValue) {
-                            Token paramValue = lexer.next();
-                            recognizedIndexes.add(paramValue.Index);
-                            value = paramValue.Value;
-                        } else {
-                            value = "";
-                        }
-
-                        recognized.add(new RecognizedArgument(argumentWithOptions, current.Value, value));
+                    String value;
+                    recognizedIndexes.add(current.index);
+                    Token next = peekTokens.peek();
+                    if (null!=next && next.tokenType.equals( TokenType.PARAMETER_VALUE))
+                    {
+                        Token paramValue = peekTokens.next();
+                        recognizedIndexes.add(paramValue.index);
+                        value = paramValue.value;
                     }
+                    else
+                    {
+                        value = "";
+                    }
+
+                    recognized.add(new RecognizedArgument(
+                            argumentWithOptions,
+                            current.index,
+                            current.value,
+                            value));
                 }
                 break;
-                case ParameterValue:
+                case PARAMETER_VALUE:
                     break;
                 default:
-                    throw new RuntimeException(current.TokenType.toString());
+                    throw new ArgumentOutOfRangeException(current.tokenType.toString());
             }
         }
 
+        List<String> argumentList = arguments
+                .stream()
+                .collect(Collectors.toList());
 
-        Collection<UnrecognizedArgument> unRecognizedArguments = unrecoqnizedArguments(arguments, recognizedIndexes);
-
-        return new ParsedArguments(_argumentWithOptions,
-                recognized,
-                unRecognizedArguments);
+        List<UnrecognizedArgument> unRecognizedArguments = ListUtils.withIndex( argumentList)
+                .stream()
+                .filter(tpl->!recognizedIndexes.contains(tpl.key))
+                .map(tpl -> new UnrecognizedArgument(tpl.key, tpl.value))
+                .collect(Collectors.toList());
+        return new ParsedArguments(_argumentWithOptions,recognized,unRecognizedArguments);
     }
+
+    private void InferParameter(List<Integer> recognizedIndexes, List<RecognizedArgument> recognized, Token current) {
+        Argument argumentWithOptions;
+        argumentWithOptions = ListUtils
+                .filterWithIndex(_argumentWithOptions, (argOpts,i)->i==current.index)
+                .findFirst()
+                .orElse(null)
+        ;
+        if (null != argumentWithOptions)
+        {
+            recognizedIndexes.add(current.index);
+            RecognizedArgument arg = new RecognizedArgument(
+                    argumentWithOptions,
+                    current.index,
+                    argumentWithOptions.name,
+                    current.value);
+            arg.inferredOrdinal = true;
+            recognized.add(arg);
+        }
+    }
+
+    private boolean accept(Argument argument, int index, String value) {
+
+        if (argument instanceof ArgumentWithOptions)
+        {
+            return ((ArgumentWithOptions)argument).Argument.accept(index, value);
+        }
+        return ArgumentParameter.parse(argument.name).accept(index, value);
+    }
+
+    private boolean accept(Argument argument, String value) {
+
+        if (argument instanceof ArgumentWithOptions)
+        {
+            return ((ArgumentWithOptions)argument).Argument.accept(value);
+        }
+        return ArgumentParameter.parse(argument.name).accept(value);
+    }
+
 }

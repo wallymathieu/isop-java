@@ -2,23 +2,27 @@ package jisop.test;
 
 
 
-import java.io.IOException;
-import java.io.OutputStream;
+import jisop.Build;
+import jisop.MissingArgumentException;
+import jisop.TypeConversionFailedException;
+import jisop.command_line.ControllerRecognizer;
+import jisop.command_line.parse.*;
+import jisop.test.fake_controllers.EnumerableController;
+import jisop.test.fake_controllers.MyController;
+import jisop.test.fake_controllers.MyOptionalController;
+import jisop.test.fake_controllers.WithIndexController;
+import jisop.test.helpers.Counter;
+import jisop.test.testData.SingleIntAction;
+import org.junit.Test;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
-import java.util.function.*;
+import java.util.function.Function;
 import java.util.stream.Stream;
 
-import jisop.*;
 import static org.junit.Assert.*;
-
-import jisop.command_line.ControllerRecognizer;
-import jisop.command_line.parse.*;
-import jisop.test.fake_controllers.*;
-import org.junit.Test;
-import jisop.test.helpers.*;
 /**
  *
  * @author mathieu
@@ -33,7 +37,7 @@ public class ArgumentParserTest extends Base {
         Collection<RecognizedArgument> arguments = new Build().parameter("&argument").parse(new String[]{"-a"}).recognizedArguments;
         assertEquals(1, arguments.size());
         RecognizedArgument arg1 = arguments.iterator().next();
-        assertEquals("&argument", arg1.withOptions.argument.toString());
+        assertEquals("argument", arg1.argument.name);
     }
 
     @Test
@@ -41,7 +45,7 @@ public class ArgumentParserTest extends Base {
         Collection<RecognizedArgument> arguments = new Build().parameter("&beta").parse(new String[]{"-a", "-b"}).recognizedArguments;
         assertEquals(1, arguments.size());
         RecognizedArgument first = arguments.iterator().next();
-        assertEquals("b", first.argument);
+        assertEquals("b", first.rawArgument);
     }
 
     @Test
@@ -49,15 +53,18 @@ public class ArgumentParserTest extends Base {
         Collection<RecognizedArgument> arguments = new Build().parameter("beta").parse(new String[]{"-a", "--beta"}).recognizedArguments;
         assertEquals(1, arguments.size());
         RecognizedArgument first = arguments.iterator().next();
-        assertEquals("beta", first.argument);
+        assertEquals("beta", first.rawArgument);
     }
 
     @Test
     public void It_can_parse_parameter_value() {
-        Collection<RecognizedArgument> arguments = new Build().parameter("beta").parse(new String[]{"-a", "--beta", "value"}).recognizedArguments;
+        Collection<RecognizedArgument> arguments = new Build()
+                .parameter("beta")
+                .parse(new String[]{"-a", "--beta", "value"})
+                .recognizedArguments;
         assertEquals(1, arguments.size());
         RecognizedArgument first = arguments.iterator().next();
-        assertEquals("beta", first.argument);
+        assertEquals("beta", first.rawArgument);
         assertEquals("value", first.value);
     }
 
@@ -69,10 +76,13 @@ public class ArgumentParserTest extends Base {
 
     @Test
     public void It_can_parse_ordinal_parameter_value() {
-        Collection<RecognizedArgument> arguments = new Build().parameter("#0first").parse(new String[]{"first"}).recognizedArguments;
+        Collection<RecognizedArgument> arguments = new Build()
+                .parameter("#0first")
+                .parse(new String[]{"first"})
+                .recognizedArguments;
         assertEquals(1, arguments.size());
         RecognizedArgument first = arguments.iterator().next();
-        assertEquals("first", first.argument);
+        assertEquals("first", first.rawArgument);
     }
 
     @Test
@@ -80,18 +90,20 @@ public class ArgumentParserTest extends Base {
         Collection<RecognizedArgument> arguments = new Build().parameter("beta=").parse(new String[]{"-a", "--beta=test", "value"}).recognizedArguments;
         assertEquals(1, arguments.size());
         RecognizedArgument first = arguments.iterator().next();
-        assertEquals("beta", first.argument);
+        assertEquals("beta", first.rawArgument);
         assertEquals("test", first.value);
     }
 
     @Test
     public void It_can_parse_parameter_alias() {
-        Collection<RecognizedArgument> arguments = new Build().parameter("beta|b=").parse(new String[]{"-a", "-b=test", "value"}).recognizedArguments;
-        System.out.println(arguments);
+        Collection<RecognizedArgument> arguments = new Build()
+                .parameter("beta|b=")
+                .parse(new String[]{"-a", "-b=test", "value"})
+                .recognizedArguments;
         assertEquals(1, arguments.size());
         RecognizedArgument first = arguments.iterator().next();
-        assertEquals("beta|b=", first.withOptions.argument.toString());
-        assertEquals("b", first.argument);
+        assertEquals("beta", first.argument.name);
+        assertEquals("b", first.rawArgument);
         assertEquals("test", first.value);
     }
 
@@ -104,7 +116,7 @@ public class ArgumentParserTest extends Base {
         };
         assertArrayEquals(expected, unRecognizedArguments.toArray());
     }
-    //@Test TODO: Not implement!
+    //@Test TODO: Not implemented!
     public void It_can_infer_ordinal_usage_of_named_parameters()
     {
         Collection<RecognizedArgument> arguments = new Build()
@@ -140,14 +152,14 @@ public class ArgumentParserTest extends Base {
 
         assertEquals(1, arguments.size());
         RecognizedArgument arg1 = arguments.iterator().next();
-        assertEquals("alpha", arg1.withOptions.argument.toString());
+        assertEquals("alpha", arg1.argument.name);
         assertEquals(null, arg1.value);
-        assertEquals("alpha", arg1.argument);
+        assertEquals("alpha", arg1.rawArgument);
     }
 
     @Test
     public void It_can_parse_class_and_method_and_execute() {
-        __count = 0;
+        Counter count = new Counter();
 
         Function<Class,Object> factory = c -> {
             assertEquals(MyController.class, c);
@@ -155,7 +167,7 @@ public class ArgumentParserTest extends Base {
 
                 @Override
                 public String action(Param p) {
-                    __count++;
+                    count.next();
                     return null;
                 }
             };
@@ -165,16 +177,11 @@ public class ArgumentParserTest extends Base {
                 .recognizeClass(MyController.class)
                 .parse(new String[]{"my", "action", "--param2", "value2", "--param3", "3", "--param1", "value1", "--param4", "3.4"});
         assertEquals(0, arguments.unRecognizedArguments.size());
-        OutputStream out = new OutputStream() {
-
-            public void write(int b) {
-            }
-        };
-        arguments.invoke(out);
-        assertEquals(1, __count);
+        arguments.invoke().toArray();
+        assertEquals(1, count.getCount());
     }
 
-    //@Test TODO: Not implement!
+    //@Test TODO: Not implemented!
     public void It_can_parse_class_and_method_and_execute_with_ordinal_syntax()
     {
         Counter count = new Counter();
@@ -183,23 +190,19 @@ public class ArgumentParserTest extends Base {
             assertEquals(MyController.class,t);
             return
                     (Object)
-                            new MyController().SetOnAction((p1) -> toString(count.next()) );
+                            new MyController().setOnAction((p1) -> toString(count.next()));
         };
         ParsedArguments arguments = new Build()
             .recognizeClass(MyController.class)
             .setFactory(factory)
-            .parse(new String[]{"My", "Action", "value1", "value2", "3", "3.4"});
+            .parse(new String[]{"My", "action", "value1", "value2", "3", "3.4"});
 
         assertEquals(0, arguments.unRecognizedArguments.size());
-        OutputStream out = new OutputStream() {
-            public void write(int b) {
-            }
-        };
-        arguments.invoke(out);
+        arguments.invoke().toArray();
         assertEquals(1, count.getCount());
     }
 
-    //@Test TODO: Not implement!
+    //@Test TODO: Not implemented!
     public void It_can_parse_class_and_method_and_knows_whats_required()
     {
         Function<Class, Object> factory = (Class t) ->
@@ -207,20 +210,23 @@ public class ArgumentParserTest extends Base {
             assertEquals(MyController.class, t);
             return
                     (Object)
-                            new MyController().SetOnAction((p1) -> "" );
+                            new MyController().setOnAction((p1) -> "");
         };
         Build build = new Build()
                 .recognizeClass(MyController.class)
                 .setFactory(factory);
 
-        ControllerRecognizer first = build.getControllerRecognizers().iterator().next();
-        List<ArgumentWithOptions> recognizers = first.getRecognizers("Action");
+        ControllerRecognizer first = build.getControllerRecognizers()
+                .values().stream()
+                .findFirst().get()
+                .get();
+        List<ArgumentWithOptions> recognizers = first.getRecognizers("action");
         assertArrayEquals(
                 dictionaryDescriptionToKv("[param1, True], [param2, True], [param3, True], [param4, True]", s -> Boolean.parseBoolean(s)).toArray(),
-                recognizers.stream().map(r -> toSimpleEntry(r.Description, r.Required)).toArray());
+                recognizers.stream().map(r -> toSimpleEntry(r.description, r.required)).toArray());
     }
 
-    //@Test TODO: Not implement!
+    //@Test TODO: Not implemented!
     public void It_can_parse_class_and_method_and_knows_whats_not_required()
     {
         Function<Class, Object> factory = (Class t) ->
@@ -234,14 +240,17 @@ public class ArgumentParserTest extends Base {
                 .recognizeClass(MyOptionalController.class)
                 .setFactory(factory);
 
-        ControllerRecognizer first = build.getControllerRecognizers().iterator().next();
-        List<ArgumentWithOptions> recognizers = first.getRecognizers("Action");
+        ControllerRecognizer first = build.getControllerRecognizers()
+                .values().stream()
+                .findFirst().get()
+                .get();
+        List<ArgumentWithOptions> recognizers = first.getRecognizers("action");
         assertArrayEquals(
                 dictionaryDescriptionToKv("[param1, True], [param2, True], [param3, True], [param4, True]", s -> Boolean.parseBoolean(s)).toArray(),
-                recognizers.stream().map(r-> toSimpleEntry(r.Description,r.Required)).toArray() );
+                recognizers.stream().map(r-> toSimpleEntry(r.description,r.required)).toArray() );
     }
 
-    //@Test TODO: Not implement!
+    //@Test TODO: Not implemented!
     public void It_can_parse_class_and_method_and_executes_default_with_the_default_values()
     {
         List<MyOptionalController.Param> parameters=new ArrayList<>();
@@ -255,17 +264,13 @@ public class ArgumentParserTest extends Base {
         ParsedArguments arguments = new Build()
                 .recognizeClass(MyOptionalController.class)
                 .setFactory(factory)
-                .parse(new String[]{"MyOptional", "Action", "--param1", "value1"});
+                .parse(new String[]{"MyOptional", "action", "--param1", "value1"});
 
-        OutputStream out = new OutputStream() {
-            public void write(int b) {
-            }
-        };
-        arguments.invoke(out);
+        arguments.invoke().toArray();
         assertArrayEquals(new Object[]{"value1", null, null, 1 }, parameters.get(0).toArray());
     }
 
-    //@Test TODO: Not implement!
+    //@Test TODO: Not implemented!
     public void It_can_parse_class_and_method_and_executes_default_with_the_default_values_when_using_ordinal_syntax()
     {
         List<MyOptionalController.Param> parameters=new ArrayList<>();
@@ -279,13 +284,9 @@ public class ArgumentParserTest extends Base {
         ParsedArguments arguments = new Build()
                 .recognizeClass(MyOptionalController.class)
                 .setFactory(factory)
-                .parse(new String[]{"MyOptional", "Action", "value1"});
+                .parse(new String[]{"MyOptional", "action", "value1"});
 
-        OutputStream out = new OutputStream() {
-            public void write(int b) {
-            }
-        };
-        arguments.invoke(out);
+        arguments.invoke().toArray();
         assertArrayEquals(new Object[]{"value1", null, null, 1}, parameters.get(0).toArray());
     }
 
@@ -294,25 +295,19 @@ public class ArgumentParserTest extends Base {
     public void It_can_parse_class_and_method_and_fail() {
         Build builder = new Build().recognizeClass(MyController.class);
         try {
-            builder.parse(new String[]{"My", "Action", "--param2", "value2", "--paramX", "3", "--param1", "value1", "--param4", "3.4"});
+            builder.parse(new String[]{"My", "action", "--param2", "value2", "--paramX", "3", "--param1", "value1", "--param4", "3.4"});
             fail();
         } catch (MissingArgumentException e) {
         }
     }
 
-    class SingleIntAction {
-        public class Param{
-            public int param;
-        }
-        public void Action(Param param) {
-        }
-    }
-
     @Test
     public void It_can_parse_class_and_method_and_fail_because_of_type_conversion() {
-        Build builder = new Build().setFactory(c -> new SingleIntAction()).recognizeClass(SingleIntAction.class);
+        Build builder = new Build()
+                .setFactory(c -> new SingleIntAction())
+                .recognizeClass(SingleIntAction.class);
         try {
-            builder.parse(new String[]{"SingleIntAction", "Action", "--param", "value"});
+            builder.parse(new String[]{"SingleIntAction", "action", "--param", "value"});
             fail();
         } catch (TypeConversionFailedException e) {
         }
@@ -322,88 +317,81 @@ public class ArgumentParserTest extends Base {
     public void It_can_parse_class_and_method_and_fail_because_no_arguments_given() {
         Build builder = new Build().recognizeClass(MyController.class);
         try {
-            builder.parse(new String[]{"My", "Action"});
+            builder.parse(new String[]{"My", "action"});
             fail();
         } catch (MissingArgumentException e) {
         }
     }
-    private int __count;
 
     @Test
     public void It_can_parse_class_and_method_and_also_arguments_and_execute() {
-        __count = 0;
+        Counter count = new Counter();
         Function<Class,Object> f = c -> {
             assertEquals(MyController.class, c);
             return new MyController() {
 
                 @Override
                 public String action(Param p) {
-                    __count++;
+                    count.next();
                     return null;
                 }
             };
         };
-        OutputStream out = new OutputStream() {
-
-            public void write(int b) {
-            }
-        };
-        ParsedArguments arguments = new Build().setFactory(f).recognizeClass(MyController.class)
-                .parse(new String[]{"My", "Action", "--param2", "value2", "--param3", "3", "--param1", "value1", "--param4", "3.4"});
+        ParsedArguments arguments = new Build()
+                .setFactory(f)
+                .recognizeClass(MyController.class)
+                .parse(new String[]{"My", "action", "--param2", "value2", "--param3", "3", "--param1", "value1", "--param4", "3.4"});
         assertEquals(0, arguments.unRecognizedArguments.size());
-        arguments.invoke(out);
-        assertEquals(1, __count);
+        arguments.invoke().toArray();
+        assertEquals(1, count.getCount());
 
     }
 
     @Test
     public void It_can_parse_class_and_default_method_and_execute() {
-        __count = 0;
+        Counter count = new Counter();
 
-        ParsedArguments arguments = new Build().setFactory(c -> {
-            assertEquals(WithIndexController.class, c);
-            return new WithIndexController() {
+        ParsedArguments arguments = new Build()
+                .setFactory(c -> {
+                    assertEquals(WithIndexController.class, c);
+                    return new WithIndexController() {
 
-                @Override
-                public String Index(Param p) {
-                    __count++;
-                    return null;
-                }
-            };
-        }).recognizeClass(WithIndexController.class).parse(new String[]{"WithIndex", /*
+                        @Override
+                        public String Index(Param p) {
+                            count.next();
+                            return null;
+                        }
+                    };
+                })
+                .recognizeClass(WithIndexController.class)
+                .parse(new String[]{"WithIndex", /*
                      * "Index",
                      */ "--param2", "value2", "--param3", "3", "--param1", "value1", "--param4", "3.4"});
 
         assertEquals(0, arguments.unRecognizedArguments.size());
-        arguments.invoke(new OutputStream() {
-
-            @Override
-            public void write(int i) throws IOException {
-            }
-        });
-        assertEquals(1,__count);
+        arguments.invoke().toArray();
+        assertEquals(1, count.getCount());
     }
 
     @Test
     public void It_can_invoke_recognized() {
-        __count = 0;
+        Counter count= new Counter();
 
         new Build()
-                .parameter("beta", false, "", value -> __count++)
+                .parameter("beta", false, "", value -> count.next())
                 .parameter("alpha", false, "", value -> fail())
                 .parse(new String[]{"-a", "value", "--beta"})
-                .invoke(System.out);
-        assertEquals(1, __count);
+                .invoke().toArray();
+        assertEquals(1, count.getCount());
     }
-    int __createCount;
 
     @Test
     public void It_understands_method_returning_enumerable() {
-        __createCount = 0;
+        Counter createCount = new Counter();
 
         ParsedArguments arguments = new Build().setFactory(c -> {
             assertEquals(EnumerableController.class, c);
-            __createCount++;
+            createCount.next();
             return new EnumerableController() {
 
                 @Override
@@ -414,19 +402,8 @@ public class ArgumentParserTest extends Base {
         }).recognizeClass(EnumerableController.class).parse(new String[]{"enumerable", "return"});
 
         assertEquals(0, arguments.unRecognizedArguments.size());
-        OutputStream out = new OutputStream() {
-            public void write(int b) {
-            }
-        };
-        arguments.invoke(out);
-        assertEquals(1, __createCount);
+        arguments.invoke().toArray();
+        assertEquals(1, createCount.getCount());
     }
 
-    public class EnumerableController {
-        public int Length;
-
-        public Stream<String> Return() {
-            return null;
-        }
-    }
 }

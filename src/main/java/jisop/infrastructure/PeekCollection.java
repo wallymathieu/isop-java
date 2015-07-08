@@ -7,22 +7,22 @@ import java.util.LinkedList;
  *
  * @author mathieu
  */
-public class PeekCollection<T> extends LinkedList<T> {
-
+public class PeekCollection<T> {
+    private LinkedList<T> col;
     public PeekCollection(Collection<T> col){
-        super(col);
+        this.col = new LinkedList<>(col);
     }
     private int _currentIndex = -1;
 
     public T current() {
-        if (_currentIndex < this.size()) {
-            return this.get(_currentIndex);
+        if (_currentIndex < col.size()) {
+            return col.get(_currentIndex);
         }
         throw new RuntimeException("out of range");
     }
 
     public boolean hasMore() {
-        return _currentIndex + 1 < size();
+        return _currentIndex + 1 < col.size();
     }
 
     public T next() {
@@ -30,8 +30,8 @@ public class PeekCollection<T> extends LinkedList<T> {
         return current();
     }
 
-    public T peekNext() {
+    public T peek() {
         int idx = _currentIndex + 1;
-        return idx < size() ? get(idx) : null;
+        return idx < col.size() ? col.get(idx) : null;
     }
 }

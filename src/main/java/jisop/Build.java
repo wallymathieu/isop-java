@@ -2,37 +2,39 @@ package jisop;
 
 import jisop.api.ControllerExpression;
 import jisop.command_line.ControllerRecognizer;
-import jisop.command_line.ParsedMethod;
 import jisop.command_line.lex.ArgumentLexer;
 import jisop.command_line.parse.ArgumentParameter;
 import jisop.command_line.parse.ArgumentParser;
 import jisop.command_line.parse.ArgumentWithOptions;
 import jisop.command_line.parse.ParsedArguments;
-import jisop.domain.TypeContainer;
+import jisop.domain.*;
+import jisop.domain.Formatter;
+import jisop.help.HelpController;
 
-import java.util.Collection;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.function.BiFunction;
+import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.function.Supplier;
+import java.util.stream.Collectors;
+
+import jisop.help.HelpForArgumentWithOptions;
+import jisop.help.HelpForControllers;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 /**
  *
  * @author mathieu
  */
 public class Build {
-
-    private final List<ArgumentWithOptions> _argumentRecognizers;
-    private final List<ControllerRecognizer> _controllerRecognizers;
+    private final Configuration _configuration = new Configuration();
     public boolean _allowInferParameter; // TODO:FIX
-    private BiFunction<Class,String,Object> typeConverter;
     private final TypeContainer _container = new TypeContainer();
-    public Build() {
-        _controllerRecognizers = new LinkedList<ControllerRecognizer>();
-        _argumentRecognizers = new LinkedList<ArgumentWithOptions>();
-    }
+    private HelpController _helpController;
+    private HelpForControllers _helpForControllers;
+    private HelpForArgumentWithOptions _helpForArgumentWithOptions;
 
+    public Build() {
+    }
 
     public Build parameter(String argument) {
         return parameter(argument, false, null, null);
@@ -46,48 +48,52 @@ public class Build {
                            boolean required,
                            String description,
                            Consumer<String> action) {
-        _argumentRecognizers.add(new ArgumentWithOptions(ArgumentParameter.parse(argument),
-                required, description, action));
+        _configuration.fields.add(new Property(argument, action, required, description, String.class));
+        return this;
+    }
+
+
+    public Build formatObjectsAsTable()
+    {
+        _configuration.formatter = new TableFormatter();
+        return this;
+    }
+
+    public Build setFormatter(Formatter formatter){
+        _configuration.formatter = formatter;
         return this;
     }
 
     public ParsedArguments parse(String[] arg) {
-        ArgumentParser argumentParser = new ArgumentParser(_argumentRecognizers);
-        // TODO: Need to figure out where this goes. To Much logic for this layer.
-        ArgumentLexer lexer = ArgumentLexer.lex(arg);
-        ParsedArguments parsedArguments = argumentParser.parse(lexer, arg);
-        if (_controllerRecognizers.size() > 0) {
-            ControllerRecognizer controllerRecognizer =
-                    controllerRecognizes(arg);
-            if (null != controllerRecognizer) {
-                ParsedMethod parsedMethod = controllerRecognizer.parse(arg);
-                parsedMethod.factory = _container;
-                ParsedArguments merged = parsedArguments.merge(parsedMethod);
-                if (!controllerRecognizer.ignoreGlobalUnMatchedParameters) {
-                    failOnUnMatched(merged);
-                }
-                return merged;
-            }
+        ArgumentParser argumentParser = new ArgumentParser(getGlobalParameters(), _allowInferParameter);
+        ArgumentLexer lexed = ArgumentLexer.lex(arg);
+        ParsedArguments parsedArguments = argumentParser.parse(lexed, Arrays.asList(arg));
+        ControllerRecognizer controllerRecognizer = getControllerRecognizers()
+                .values().stream()
+                .map(cr -> cr.get())
+                .filter(cr -> cr.recognize(arg))
+                .findFirst()
+                .orElse(null);
+        if (null != controllerRecognizer)
+        {
+            return controllerRecognizer.parseArgumentsAndMerge(arg,
+                    parsedArguments);
         }
-        failOnUnMatched(parsedArguments);
+        parsedArguments.assertFailOnUnMatched();
         return parsedArguments;
     }
-
-    private static void failOnUnMatched(ParsedArguments parsedArguments) { // This does not belong here. This is just supposed to be a fluent layer.
-        Collection<ArgumentWithOptions> unMatchedRequiredArguments = parsedArguments.UnMatchedRequiredArguments();
-
-        if (unMatchedRequiredArguments.size() > 0) {
-            throw new MissingArgumentException();
-        }
-    }
-
     public Build recognizeClass(Class arg) {
-        _controllerRecognizers.add(new ControllerRecognizer(arg,_container));
+        return recognizeClass(arg, false);
+    }
+    public Build recognizeClass(Class arg, boolean ignoreGlobalUnMatchedParameters) {
+        _configuration.recognizes.add(new Controller(arg, ignoreGlobalUnMatchedParameters));
         return this;
     }
-
     public Build recognize(Object arg) {
-        _controllerRecognizers.add(new ControllerRecognizer(arg.getClass(),_container));
+        return recognize(arg,false);
+    }
+    public Build recognize(Object arg, boolean ignoreGlobalUnMatchedParameters) {
+        _configuration.recognizes.add(new Controller(arg.getClass(),ignoreGlobalUnMatchedParameters));
         _container.add(arg.getClass(), arg);
         return this;
     }
@@ -96,12 +102,43 @@ public class Build {
         throw new RuntimeException("Not implemented");
     }
 
-    public Collection<ControllerRecognizer> getControllerRecognizers() {
-        return _controllerRecognizers;
+    public Map<Class, Supplier<ControllerRecognizer>> getControllerRecognizers() {
+        if (_configuration.recognizesHelp
+                && !_configuration.recognizes
+                    .stream()
+                    .anyMatch(c->c.type==HelpController.class))
+        {
+            recognize(getHelpController(), true);
+        }
+
+        return _configuration.recognizes.stream()
+                .collect(Collectors.toMap(
+                        c -> c.type,
+                        c -> getRecognizerSupplier(c)));
     }
 
-    public Collection<ArgumentWithOptions> getGlobalParameters() {
-        return _argumentRecognizers;
+    private Supplier<ControllerRecognizer> getRecognizerSupplier(Controller c){
+        return ()->new ControllerRecognizer(c, _configuration, _container, _allowInferParameter);
+    }
+
+    private Object getHelpController() {
+        if (_helpController == null && _configuration.recognizesHelp)
+        {
+            _helpForControllers = new HelpForControllers(_configuration.recognizes, _container);
+            _helpForArgumentWithOptions = new HelpForArgumentWithOptions(getGlobalParameters());
+            _helpController = new HelpController(_helpForArgumentWithOptions, _helpForControllers);
+        }
+        return _helpController;
+    }
+
+    public Collection<Argument> getGlobalParameters() {
+        return _configuration.fields.stream().map(p ->
+                new ArgumentWithOptions(
+                        ArgumentParameter.parse(p.name),
+                        p.action,
+                        p.required,
+                        p.description,
+                        p.type)).collect(Collectors.toList());
     }
 
     public Build setFactory(Function<Class,Object> objectFactory) {
@@ -109,17 +146,15 @@ public class Build {
         return this;
     }
 
-    private ControllerRecognizer controllerRecognizes(String[] arg) {
-        for (int i = 0; i < _controllerRecognizers.size(); i++) {
-            ControllerRecognizer r = _controllerRecognizers.get(i);
-            if (r.recognize(arg)) {
-                return r;
-            }
-        }
-        return null;
-    }
-
     public ControllerExpression controller(String controllerName) {
         return new ControllerExpression(controllerName, this);
+    }
+
+    public Build configurationFrom(String path) {
+        throw new NotImplementedException();
+    }
+
+    public Build configuration(Object conf) {
+        throw new NotImplementedException();
     }
 }

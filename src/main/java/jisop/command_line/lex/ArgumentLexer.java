@@ -1,6 +1,5 @@
 package jisop.command_line.lex;
 
-import java.util.Collection;
 import java.util.LinkedList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -11,14 +10,10 @@ import java.util.regex.Pattern;
  */
 public class ArgumentLexer extends LinkedList<Token> {
 
-    private static final Pattern ParamPattern =
+    private static final Pattern PARAM_PATTERN =
             Pattern.compile("(--|/|-)([^:=]*)([:=]?)(.*)");
 
     private ArgumentLexer() {
-    }
-
-    public ArgumentLexer(Collection<Token> tokens) {
-        super(tokens);
     }
 
     public static ArgumentLexer lex(String[] arg) {
@@ -30,24 +25,24 @@ public class ArgumentLexer extends LinkedList<Token> {
             int valueIndex = currentIndex;
             currentIndex++;
 
-            Matcher match = ParamPattern.matcher(value);
+            Matcher match = PARAM_PATTERN.matcher(value);
             if (match.matches()) {
-                retval.add(new Token(match.group(2), TokenType.Parameter, valueIndex));
+                retval.add(new Token(match.group(2), TokenType.PARAMETER, valueIndex));
                 if (match.group(4).length() > 0) {
-                    retval.add(new Token(match.group(4), TokenType.ParameterValue, valueIndex));
+                    retval.add(new Token(match.group(4), TokenType.PARAMETER_VALUE, valueIndex));
                 } else {
                     if (currentIndex < length) {
                         String possibleParamValue = arg[currentIndex];
                         int possibleParamValueIndex = currentIndex;
-                        Matcher m = ParamPattern.matcher(possibleParamValue);
+                        Matcher m = PARAM_PATTERN.matcher(possibleParamValue);
                         if (!m.matches()) {
                             currentIndex++;
-                            retval.add(new Token(possibleParamValue, TokenType.ParameterValue, possibleParamValueIndex));
+                            retval.add(new Token(possibleParamValue, TokenType.PARAMETER_VALUE, possibleParamValueIndex));
                         }
                     }
                 }
             } else {
-                retval.add(new Token(value, TokenType.Argument, valueIndex));
+                retval.add(new Token(value, TokenType.ARGUMENT, valueIndex));
             }
         }
         return retval;

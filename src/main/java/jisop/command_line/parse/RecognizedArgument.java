@@ -1,5 +1,7 @@
 package jisop.command_line.parse;
 
+import jisop.domain.Argument;
+import jisop.infrastructure.KeyValuePair;
 import jisop.infrastructure.Objects;
 
 /**
@@ -12,29 +14,37 @@ public class RecognizedArgument {
     /// </summary>
 
     public final String value;
-    public final ArgumentWithOptions withOptions;
+    public final Argument argument;
     /// <summary>
     /// the "argument" of the expression "--argument"
     /// </summary>
-    public final String argument;
+    public final String rawArgument;
+    public final int index;
+    public boolean inferredOrdinal;
 
-    public RecognizedArgument(ArgumentWithOptions argumentWithOptions,
-            String parameter) {
-        this(argumentWithOptions, parameter, null);
+    public RecognizedArgument(Argument argumentWithOption,
+                              int index,
+                              String argument) {
+        this(argumentWithOption, index, argument, null);
     }
 
-    public RecognizedArgument(ArgumentWithOptions argumentWithOptions,
-            String parameter, String value) {
+    public RecognizedArgument(
+            Argument argumentWithOption,
+            int index,
+            String argument,
+            String value) {
         this.value = value;
-        withOptions = argumentWithOptions;
-        argument = parameter;
+        this.index = index;
+        this.argument = argumentWithOption;
+        this.rawArgument = argument;
     }
 
     @Override
     public int hashCode() {
         int hash = 7;
         hash = 79 * hash + Objects.hashCode(this.value);
-        hash = 79 * hash + Objects.hashCode(this.withOptions);
+        hash = 79 * hash + Objects.hashCode(this.index);
+        hash = 79 * hash + Objects.hashCode(this.rawArgument);
         hash = 79 * hash + Objects.hashCode(this.argument);
         return hash;
     }
@@ -51,7 +61,10 @@ public class RecognizedArgument {
         if (!Objects.equals(this.value, other.value)) {
             return false;
         }
-        if (!Objects.equals(this.withOptions, other.withOptions)) {
+        if (!Objects.equals(this.index, other.index)) {
+            return false;
+        }
+        if (!Objects.equals(this.rawArgument, other.rawArgument)) {
             return false;
         }
         if (!Objects.equals(this.argument, other.argument)) {
@@ -61,5 +74,9 @@ public class RecognizedArgument {
     }
     public String toString(){
         return String.format("%1s: %2s", this.argument,this.value);
+    }
+
+    public KeyValuePair<String, String> asKeyValue() {
+        return new KeyValuePair<>(rawArgument,value);
     }
 }

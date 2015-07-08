@@ -1,10 +1,13 @@
 package jisop.command_line.parse;
 
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
+import jisop.MissingArgumentException;
+import jisop.domain.Argument;
+import jisop.infrastructure.KeyValuePair;
 
 import java.io.OutputStream;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  *
@@ -16,7 +19,7 @@ public class ParsedArguments {
     /// 
     /// </summary>
     /// <param name="parsedArguments"></param>
-    public ParsedArguments(Collection<ArgumentWithOptions> ArgumentWithOptions,
+    public ParsedArguments(Collection<Argument> ArgumentWithOptions,
             Collection<RecognizedArgument> recognizedArguments,
             Collection<UnrecognizedArgument> UnRecognizedArguments) {
         this.argumentWithOptions= ArgumentWithOptions;
@@ -28,47 +31,44 @@ public class ParsedArguments {
         argumentWithOptions = parsedArguments.argumentWithOptions;
         unRecognizedArguments = parsedArguments.unRecognizedArguments;
     }
-    public final Collection<RecognizedArgument> recognizedArguments;
+    public Collection<RecognizedArgument> recognizedArguments;
     public Collection<UnrecognizedArgument> unRecognizedArguments;
-    public final Collection<ArgumentWithOptions> argumentWithOptions;
+    public final Collection<Argument> argumentWithOptions;
 
-    public Collection<ArgumentWithOptions> UnMatchedRequiredArguments() {
+    public Collection<Argument> UnMatchedRequiredArguments() {
         return argumentWithOptions.stream()
-                .filter(arg->arg.Required && !isRecognized(arg))
+                .filter(arg->arg.required && !isRecognized(arg))
                 .collect(Collectors.toList());
     }
 
-    public void invoke(OutputStream out) {
+    public Stream<String> invoke() {
         recognizedArguments.stream()
-                .filter(arg -> null != arg.withOptions.action)
-                .forEach(arg -> arg.withOptions.action.accept(arg.value));
+                .filter(arg -> null != arg.argument.action)
+                .forEach(arg -> arg.argument.action.accept(arg.value));
+        return Stream.of("");
     }
 
-    private boolean isRecognized(ArgumentWithOptions arg) {
+    private boolean isRecognized(Argument arg) {
         return recognizedArguments.stream()
-                .anyMatch(a->a.withOptions.equals(arg));
+                .anyMatch(a->a.argument.equals(arg));
     }
 
     public ParsedArguments merge(ParsedArguments parsedMethod) {
         return new MergedParsedArguments(this, parsedMethod);
     }
 
-    public RecognizedArgument withName(String name) {
-        return recognizedArguments
-                .stream()
-                .filter(r->r.argument.toUpperCase().equals(name.toUpperCase()))
-                .findFirst()
-                .get();
-    }
-
-    public void withoutIndex0to1() {
-        unRecognizedArguments =
-                unRecognizedArguments.stream()
-                        .filter(arg->arg.index>=2)
-                        .collect(Collectors.toList());
-    }
-
     public void assertFailOnUnMatched() {
-        throw new NotImplementedException();
+        Collection<Argument> unMatchedRequiredArguments = UnMatchedRequiredArguments();
+
+        if (unMatchedRequiredArguments.size() > 0) {
+            throw new MissingArgumentException("Missing arguments",
+                    unMatchedRequiredArguments.stream().map(a->a.name).toArray(size->new String[size]));
+        }
+    }
+
+    public Collection<KeyValuePair<String, String>> RecognizedArgumentsAsPairs() {
+        return recognizedArguments.stream()
+                .map(r-> r.asKeyValue())
+                .collect(Collectors.toList());
     }
 }

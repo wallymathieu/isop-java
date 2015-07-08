@@ -1,7 +1,6 @@
 package jisop.command_line.parse;
 
-import jisop.infrastructure.Objects;
-import jisop.infrastructure.StringUtils;
+import jisop.domain.Argument;
 
 import java.util.function.Consumer;
 
@@ -11,57 +10,25 @@ import java.util.function.Consumer;
  *
  * @author mathieu
  */
-public class ArgumentWithOptions {
-
-    public final String Description;
-    public final ArgumentParameter argument;
-    public final Consumer<String> action;
-    public final boolean Required;
-
+public class ArgumentWithOptions extends Argument {
+    public final ArgumentParameter Argument;
     public ArgumentWithOptions(ArgumentParameter argument,
-            boolean required, 
-            String description,
-            Consumer<String> action) {
-        Description = description;
-        this.argument = argument;
-        Required = required;
-        this.action = action;
+                               Consumer<String> action,
+                               boolean required,
+                               String description,
+                               Class type) {
+        super(argument!=null? argument.longAlias() : null, action, required, description, type);
+        Argument = argument;
+    }
+    public ArgumentWithOptions(ArgumentParameter argument) {
+        this(argument, null, false, null, null);
+    }
+    public ArgumentWithOptions required(boolean required){
+        return new ArgumentWithOptions(this.Argument, this.action, required, description, type);
     }
 
-    public String help() {
-        return argument.help()
-                + (StringUtils.isNullOrEmpty(Description)
-                ? ""
-                : "\t" + Description);
+    public ArgumentWithOptions type(Class type){
+        return new ArgumentWithOptions(this.Argument, this.action, required, description, type);
     }
 
-    @Override
-    public int hashCode() {
-        int hash = 3;
-        hash = 41 * hash + Objects.hashCode(this.Description);
-        hash = 41 * hash + Objects.hashCode(this.argument);
-        hash = 41 * hash + (this.Required ? 1 : 0);
-        return hash;
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (obj == null) {
-            return false;
-        }
-        if (getClass() != obj.getClass()) {
-            return false;
-        }
-        final ArgumentWithOptions other = (ArgumentWithOptions) obj;
-        if (!Objects.equals(this.Description, other.Description)) {
-            return false;
-        }
-        if (!Objects.equals(this.argument, other.argument)) {
-            return false;
-        }
-        if (this.Required != other.Required) {
-            return false;
-        }
-        return true;
-    }
 }

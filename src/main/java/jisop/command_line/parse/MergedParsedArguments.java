@@ -7,6 +7,7 @@ package jisop.command_line.parse;
 import jisop.infrastructure.ListUtils;
 
 import java.io.OutputStream;
+import java.util.stream.Stream;
 
 /**
  *
@@ -27,10 +28,10 @@ class MergedParsedArguments extends ParsedArguments {
 
     }
     @Override
-    public void invoke(OutputStream out) {
-        _first.invoke(out);
-        _second.invoke(out);
+    public Stream<String> invoke() {
+        Stream<String> r=Stream.empty();
+        r = Stream.concat(r, _first.invoke());
+        r = Stream.concat(r, _second.invoke());
+        return r;
     }
-
-    
 }

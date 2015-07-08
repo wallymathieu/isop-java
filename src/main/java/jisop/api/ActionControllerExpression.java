@@ -7,6 +7,8 @@ import jisop.command_line.parse.ParsedArguments;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.util.Dictionary;
+import java.util.Map;
+
 /**
  * Created by mathieu.
  */
@@ -22,30 +24,29 @@ public class ActionControllerExpression {
         this.actionName = actionName;
         this.build = build;
     }
-    public ParsedArguments Parameters(Dictionary<String, String> arg)
+    public ParsedArguments parameters(Map<String, String> arg)
     {
-        ArgumentParser argumentParser = new ArgumentParser(build.getGlobalParameters());
-        ParsedArguments parsedArguments = argumentParser.Parse(arg);
-        if (build.getControllerRecognizers().stream()
-                .anyMatch(a -> true))
+        ArgumentParser argumentParser = new ArgumentParser(build.getGlobalParameters(), build._allowInferParameter);
+        ParsedArguments parsedArguments = argumentParser.parse(arg);
+        ControllerRecognizer controllerRecognizer = build.getControllerRecognizers()
+                .values().stream()
+                .map(recognizer -> recognizer.get())
+                .filter(recognizer -> recognizer.recognize(new String[]{controllerName, actionName}))
+                .findFirst()
+                .orElse(null);
+        if (null != controllerRecognizer)
         {
-            ControllerRecognizer controllerRecognizer = build.getControllerRecognizers().stream()
-                    .filter(recognizer -> recognizer.recognize(new String[]{controllerName, actionName}))
-                    .findFirst()
-                    .get();
-            if (null != controllerRecognizer)
-            {
-                return controllerRecognizer.parseArgumentsAndMerge(actionName, arg,
-                        parsedArguments);
-            }
+            return controllerRecognizer.parseArgumentsAndMerge(actionName, arg,
+                    parsedArguments);
         }
+
         parsedArguments.assertFailOnUnMatched();
         return parsedArguments;
     }
     /// <summary>
     ///
     /// </summary>
-    public String Help()
+    public String help()
     {
         throw new NotImplementedException();
     }

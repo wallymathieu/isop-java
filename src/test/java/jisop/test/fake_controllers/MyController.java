@@ -17,7 +17,7 @@ public class MyController {
         public double param4;
     }
     public Function<Param,String> onAction;
-    public MyController SetOnAction(Function<Param,String> onAction){
+    public MyController setOnAction(Function<Param, String> onAction){
         this.onAction = onAction;
         return this;
     }

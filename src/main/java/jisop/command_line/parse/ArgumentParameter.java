@@ -2,6 +2,8 @@ package jisop.command_line.parse;
 
 import jisop.infrastructure.StringUtils;
 
+import java.util.Arrays;
+
 /**
  *
  * @author mathieu
@@ -58,5 +60,15 @@ public class ArgumentParameter {
         } else {
             return Ordinal.intValue() == index && hasAlias(val);
         }
+    }
+    public boolean accept(String val) {
+        return hasAlias(val);
+    }
+
+    public String longAlias() {
+        return Arrays.asList( Aliases )
+                .stream()
+                .max( (a,b) -> Integer.compare(a.length(),b.length()))
+                .orElse(null);
     }
 }
