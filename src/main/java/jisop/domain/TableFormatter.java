@@ -26,7 +26,7 @@ public class TableFormatter implements Formatter {
             } else if (value.getClass().isPrimitive()){
                 return Stream.of(value.toString());
             } else if (value.getClass().isArray()){
-                List<Object> array= Arrays.asList(value);
+                List<Object> array= Arrays.asList((Object[])value);
                 return getStringStream(array.stream());
             }  if (value instanceof Collection){
                 return getStringStream(((Collection) value).stream());
