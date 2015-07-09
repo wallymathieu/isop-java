@@ -1,4 +1,5 @@
 package jisop.test.fake_controllers;
+import jisop.test.helpers.NotNull;
 
 import java.util.function.*;
 
@@ -11,9 +12,13 @@ public class MyController {
     public MyController() {
     }
     public class Param{
+        @NotNull
         public String param1;
-        public String param2; 
+        @NotNull
+        public String param2;
+        @NotNull
         public int param3;
+        @NotNull
         public double param4;
     }
     public Function<Param,String> onAction;

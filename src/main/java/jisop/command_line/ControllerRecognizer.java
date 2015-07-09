@@ -34,7 +34,7 @@ public class ControllerRecognizer {
 
     public ParsedArguments parseArgumentsAndMerge(String actionName, Map<String, String> arg, ParsedArguments parsedArguments) {
         Method methodInfo = _controller.getMethod(actionName);
-        Collection<Argument> argumentRecognizers = methodInfo.GetArguments();
+        Collection<Argument> argumentRecognizers = methodInfo.getArguments();
 
         ArgumentParser parser = new ArgumentParser(argumentRecognizers, _allowInferParameter);
         ParsedArguments parsedMethodArguments = parser.parse(arg);
@@ -66,9 +66,8 @@ public class ControllerRecognizer {
         return null != findMethodInfo(lexed);
     }
 
-    public List<ArgumentWithOptions> getRecognizers(String method) {
-
-        throw new NotImplementedException();
+    public List<Argument> getRecognizers(String method) {
+        return _controller.getMethod(method).getArguments();
     }
 
     /// <summary>
@@ -82,7 +81,7 @@ public class ControllerRecognizer {
 
         Method methodInfo = findMethodInfo(lexed);
 
-        List<Argument> argumentRecognizers = methodInfo.GetArguments();
+        List<Argument> argumentRecognizers = methodInfo.getArguments();
         argumentRecognizers.addAll(0, Arrays.asList(new ArgumentWithOptions[]{
                 new ArgumentWithOptions(ArgumentParameter.parse("#0" + _controller.name)).type(String.class).required(true),
                 new ArgumentWithOptions(ArgumentParameter.parse("#1" + methodInfo.name)).required(false).type(String.class)

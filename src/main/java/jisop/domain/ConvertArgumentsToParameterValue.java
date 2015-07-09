@@ -30,7 +30,7 @@ public class ConvertArgumentsToParameterValue {
                                                      Collection<KeyValuePair<String, String>> parsedArguments,
                                                      Function<Class, Object> getInstance)
     {
-        Collection<Parameter> parameterInfos = method.GetParameters();
+        Collection<Parameter> parameterInfos = method.getParameters();
         List<Object> parameters = new ArrayList<>();
 
         for (Parameter paramInfo : parameterInfos)

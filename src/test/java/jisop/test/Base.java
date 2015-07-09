@@ -17,9 +17,9 @@ public class Base {
     {
         List<AbstractMap.SimpleEntry<String,Object>> retval= new ArrayList<>();
         Matcher m = toKv.matcher(input);
-        do {
+        while(m.find()){
             retval.add(toSimpleEntry( m.group(1), convert.apply( m.group(2))));
-        }while(m.find());
+        }
         return retval;
     }
     protected static AbstractMap.SimpleEntry<String,Object> toSimpleEntry(String key, Object value){

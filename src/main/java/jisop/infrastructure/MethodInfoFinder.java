@@ -15,7 +15,7 @@ public class MethodInfoFinder {
         // if (null != returnType)
         //     retv = retv.Where (m => m.ReturnType == returnType);
         // if (null != parameters)
-        //     retv = retv.Where (m => m.GetParameters ().Select (p => p.ParameterType).SequenceEqual (parameters));
+        //     retv = retv.Where (m => m.getParameters ().Select (p => p.ParameterType).SequenceEqual (parameters));
         // if (null != name)
         //     retv = retv.Where (m => m.name.Equals (name, StringComparison.OrdinalIgnoreCase));
         // return retv;

@@ -23,10 +23,10 @@ public class FindMethodAmongLexedTokens {
         long count = lexed.stream().filter(t -> t.tokenType.equals(TokenType.PARAMETER)).count();
         Method potentialMethod =
                 getPotential(methods, methodName)
-                .filter(method -> method.GetParameters().size() <= count)
+                .filter(method -> method.getParameters().size() <= count)
                 .sorted((o1, o2) -> Integer.compare(
-                        o1.GetParameters().size(),
-                        o2.GetParameters().size()))
+                        o1.getParameters().size(),
+                        o2.getParameters().size()))
                 .findAny()
                 .orElse(null);
         if (potentialMethod != null)

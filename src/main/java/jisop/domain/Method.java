@@ -1,15 +1,10 @@
 package jisop.domain;
 
-import jisop.command_line.parse.ArgumentParameter;
-import jisop.command_line.parse.ArgumentWithOptions;
-
-import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.function.Consumer;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 /**
@@ -31,20 +26,20 @@ public class Method {
 
 
 
-    public List<Parameter> GetParameters(){
+    public List<Parameter> getParameters(){
         Class<?>[] types= _method.getParameterTypes();
         return Arrays.asList(types)
                 .stream()
                 .map(p -> new Parameter(p))
                 .collect(Collectors.toList());
     }
-    public List<Argument> GetArguments() {
-        List<Parameter> parameterInfos = GetParameters();
+    public List<Argument> getArguments() {
+        List<Parameter> parameterInfos = getParameters();
         List<Argument> recognizers = new ArrayList<>();
 
         for (Parameter paramInfo : parameterInfos) {
             if (paramInfo.isClass()) {
-                AddArgumentWithOptionsForPropertiesOnObject(recognizers, paramInfo);
+                addArgumentWithOptionsForPropertiesOnObject(recognizers, paramInfo);
                 //var obj = Activator.createInstance(paramInfo.ParameterType);
 
             } else {
@@ -57,7 +52,7 @@ public class Method {
         return recognizers;
     }
 
-    private void AddArgumentWithOptionsForPropertiesOnObject(List<Argument> recognizers, Parameter paramInfo) {
+    private void addArgumentWithOptionsForPropertiesOnObject(List<Argument> recognizers, Parameter paramInfo) {
         String noDescription=null;
         Consumer<String> noAction=null;
         recognizers.addAll(paramInfo.getPublicInstanceProperties()

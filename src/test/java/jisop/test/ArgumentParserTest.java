@@ -7,6 +7,7 @@ import jisop.MissingArgumentException;
 import jisop.TypeConversionFailedException;
 import jisop.command_line.ControllerRecognizer;
 import jisop.command_line.parse.*;
+import jisop.domain.Argument;
 import jisop.test.fake_controllers.EnumerableController;
 import jisop.test.fake_controllers.MyController;
 import jisop.test.fake_controllers.MyOptionalController;
@@ -202,7 +203,7 @@ public class ArgumentParserTest extends Base {
         assertEquals(1, count.getCount());
     }
 
-    //@Test TODO: Not implemented!
+    @Test
     public void It_can_parse_class_and_method_and_knows_whats_required()
     {
         Function<Class, Object> factory = (Class t) ->
@@ -220,13 +221,13 @@ public class ArgumentParserTest extends Base {
                 .values().stream()
                 .findFirst().get()
                 .get();
-        List<ArgumentWithOptions> recognizers = first.getRecognizers("action");
+        List<Argument> recognizers = first.getRecognizers("action");
         assertArrayEquals(
-                dictionaryDescriptionToKv("[param1, True], [param2, True], [param3, True], [param4, True]", s -> Boolean.parseBoolean(s)).toArray(),
-                recognizers.stream().map(r -> toSimpleEntry(r.description, r.required)).toArray());
+                dictionaryDescriptionToKv("[param1, true], [param2, true], [param3, true], [param4, true]", s -> Boolean.parseBoolean(s)).toArray(),
+                recognizers.stream().map(r -> toSimpleEntry(r.name, r.required)).toArray());
     }
 
-    //@Test TODO: Not implemented!
+    @Test
     public void It_can_parse_class_and_method_and_knows_whats_not_required()
     {
         Function<Class, Object> factory = (Class t) ->
@@ -244,7 +245,7 @@ public class ArgumentParserTest extends Base {
                 .values().stream()
                 .findFirst().get()
                 .get();
-        List<ArgumentWithOptions> recognizers = first.getRecognizers("action");
+        List<Argument> recognizers = first.getRecognizers("action");
         assertArrayEquals(
                 dictionaryDescriptionToKv("[param1, True], [param2, True], [param3, True], [param4, True]", s -> Boolean.parseBoolean(s)).toArray(),
                 recognizers.stream().map(r-> toSimpleEntry(r.description,r.required)).toArray() );
