@@ -1,7 +1,5 @@
 package jisop.domain;
 
-import java.util.function.Consumer;
-
 /**
  * Created by mathieu.
  *

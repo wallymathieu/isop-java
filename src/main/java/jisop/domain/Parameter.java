@@ -1,9 +1,12 @@
 package jisop.domain;
 
+import sun.misc.Regexp;
+
 import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 /**
@@ -19,7 +22,7 @@ public class Parameter {
     public boolean isClass() {
         return !parameterClass.isPrimitive();
     }
-
+    private static Pattern notNull= Pattern.compile("(not|non)null", Pattern.CASE_INSENSITIVE);
     private class FieldInfoFromField extends FieldInfo {
 
         private Field f;
@@ -28,6 +31,11 @@ public class Parameter {
             this.f = f;
             this.name = f.getName();
             this.propertyType = f.getType();
+            this.looksRequired = Arrays.asList(f.getDeclaredAnnotations())
+                    .stream()
+                    .anyMatch(a->
+                            notNull.matcher( a.annotationType().getSimpleName()
+                    ).find());
         }
 
         @Override

@@ -19,7 +19,6 @@ import java.util.stream.Collectors;
 
 import jisop.help.HelpForArgumentWithOptions;
 import jisop.help.HelpForControllers;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 /**
  *
@@ -48,7 +47,7 @@ public class Build {
                            boolean required,
                            String description,
                            Consumer<String> action) {
-        _configuration.fields.add(new Property(argument, action, required, description, String.class));
+        _configuration.fields.add(new Field(argument, action, required, description, String.class));
         return this;
     }
 

@@ -1,5 +1,7 @@
 package jisop.test.fake_controllers;
 
+import jisop.test.helpers.NotNull;
+
 import java.util.function.Function;
 
 /**
@@ -7,6 +9,7 @@ import java.util.function.Function;
  */
 public class MyOptionalController {
     public class Param{
+        @NotNull
         public String param1;
         public String param2;
         public int param3;

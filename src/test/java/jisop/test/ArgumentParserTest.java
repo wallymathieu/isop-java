@@ -247,8 +247,8 @@ public class ArgumentParserTest extends Base {
                 .get();
         List<Argument> recognizers = first.getRecognizers("action");
         assertArrayEquals(
-                dictionaryDescriptionToKv("[param1, True], [param2, True], [param3, True], [param4, True]", s -> Boolean.parseBoolean(s)).toArray(),
-                recognizers.stream().map(r-> toSimpleEntry(r.description,r.required)).toArray() );
+                dictionaryDescriptionToKv("[param1, true], [param2, false], [param3, false], [param4, false]", s -> Boolean.parseBoolean(s)).toArray(),
+                recognizers.stream().map(r-> toSimpleEntry(r.name,r.required)).toArray() );
     }
 
     //@Test TODO: Not implemented!

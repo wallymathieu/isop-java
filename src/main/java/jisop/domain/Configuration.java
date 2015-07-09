@@ -17,7 +17,7 @@ public class Configuration {
         typeConverter = new DefaultTypeConverter();
     }
     public final List<Controller> recognizes;
-    public final List<Property> fields;
+    public final List<Field> fields;
     public Function<Class, Object> factory;
     public BiFunction<Class,String,Object> typeConverter;
     public boolean recognizesHelp;
