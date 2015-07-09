@@ -1,10 +1,8 @@
 package jisop.help;
 
 import jisop.domain.Controller;
-import jisop.domain.TypeContainer;
 
 import java.util.Collection;
-import java.util.List;
 import java.util.function.Function;
 
 /**

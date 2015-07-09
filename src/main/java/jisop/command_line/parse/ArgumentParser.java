@@ -4,7 +4,7 @@ import jisop.command_line.lex.Token;
 import jisop.command_line.lex.TokenType;
 import jisop.domain.Argument;
 import jisop.infrastructure.ArgumentOutOfRangeException;
-import jisop.infrastructure.ListUtils;
+import jisop.infrastructure.Lists;
 import jisop.infrastructure.PeekCollection;
 
 import java.util.*;
@@ -52,10 +52,10 @@ public class ArgumentParser {
     }
     public ParsedArguments parse(List<Token> lexed, Collection<String> arguments)
     {
-        List<Integer> recognizedIndexes = new ArrayList<Integer>();
-        PeekCollection<Token> peekTokens = new PeekCollection<Token>(lexed);
+        List<Integer> recognizedIndexes = new ArrayList<>();
+        PeekCollection<Token> peekTokens = new PeekCollection<>(lexed);
         boolean encounteredParameter = false;
-        List<RecognizedArgument> recognized = new ArrayList<RecognizedArgument>();
+        List<RecognizedArgument> recognized = new ArrayList<>();
         while (peekTokens.hasMore())
         {
             Token current = peekTokens.next();
@@ -130,7 +130,7 @@ public class ArgumentParser {
                 .stream()
                 .collect(Collectors.toList());
 
-        List<UnrecognizedArgument> unRecognizedArguments = ListUtils.withIndex( argumentList)
+        List<UnrecognizedArgument> unRecognizedArguments = Lists.withIndex(argumentList)
                 .stream()
                 .filter(tpl->!recognizedIndexes.contains(tpl.key))
                 .map(tpl -> new UnrecognizedArgument(tpl.key, tpl.value))
@@ -140,8 +140,8 @@ public class ArgumentParser {
 
     private void inferParameter(List<Integer> recognizedIndexes, List<RecognizedArgument> recognized, Token current) {
         Argument argumentWithOptions;
-        argumentWithOptions = ListUtils
-                .filterWithIndex(_argumentWithOptions, (argOpts,i)->i.equals(current.index))
+        argumentWithOptions = Lists
+                .filterWithIndex(_argumentWithOptions, (argOpts, i) -> i.equals(current.index))
                 .findFirst()
                 .orElse(null)
         ;

@@ -1,6 +1,6 @@
 package jisop.command_line.parse;
 
-import jisop.infrastructure.StringUtils;
+import jisop.infrastructure.Strings;
 
 import java.util.Arrays;
 
@@ -34,8 +34,8 @@ public class ArgumentParameter {
     public final String delimiter;
 
     public String help() {
-        return "--" + StringUtils.join(", or ", aliases)
-                + (StringUtils.isNullOrEmpty(delimiter)
+        return "--" + Strings.join(", or ", aliases)
+                + (Strings.isNullOrEmpty(delimiter)
                 ? ""
                 : " " + delimiter);
     }
@@ -46,7 +46,7 @@ public class ArgumentParameter {
     }
 
     public boolean hasAlias(String value) {
-        return StringUtils.containsStringIgnoreCase(aliases, value);
+        return Strings.containsStringIgnoreCase(aliases, value);
     }
 
     public boolean accept(int index, String val) {

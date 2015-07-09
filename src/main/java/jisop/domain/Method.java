@@ -30,7 +30,7 @@ public class Method {
         Class<?>[] types= _method.getParameterTypes();
         return Arrays.asList(types)
                 .stream()
-                .map(p -> new Parameter(p))
+                .map(Parameter::new)
                 .collect(Collectors.toList());
     }
     public List<Argument> getArguments() {

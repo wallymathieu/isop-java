@@ -17,7 +17,7 @@ public class ArgumentLexer extends LinkedList<Token> {
     }
 
     public static ArgumentLexer lex(String[] arg) {
-        ArgumentLexer retval = new ArgumentLexer();
+        ArgumentLexer collector = new ArgumentLexer();
         int currentIndex = 0;
         int length = arg.length;
         while (currentIndex < length) {
@@ -27,9 +27,9 @@ public class ArgumentLexer extends LinkedList<Token> {
 
             Matcher match = PARAM_PATTERN.matcher(value);
             if (match.matches()) {
-                retval.add(new Token(match.group(2), TokenType.PARAMETER, valueIndex));
+                collector.add(new Token(match.group(2), TokenType.PARAMETER, valueIndex));
                 if (match.group(4).length() > 0) {
-                    retval.add(new Token(match.group(4), TokenType.PARAMETER_VALUE, valueIndex));
+                    collector.add(new Token(match.group(4), TokenType.PARAMETER_VALUE, valueIndex));
                 } else {
                     if (currentIndex < length) {
                         String possibleParamValue = arg[currentIndex];
@@ -37,14 +37,14 @@ public class ArgumentLexer extends LinkedList<Token> {
                         Matcher m = PARAM_PATTERN.matcher(possibleParamValue);
                         if (!m.matches()) {
                             currentIndex++;
-                            retval.add(new Token(possibleParamValue, TokenType.PARAMETER_VALUE, possibleParamValueIndex));
+                            collector.add(new Token(possibleParamValue, TokenType.PARAMETER_VALUE, possibleParamValueIndex));
                         }
                     }
                 }
             } else {
-                retval.add(new Token(value, TokenType.ARGUMENT, valueIndex));
+                collector.add(new Token(value, TokenType.ARGUMENT, valueIndex));
             }
         }
-        return retval;
+        return collector;
     }
 }

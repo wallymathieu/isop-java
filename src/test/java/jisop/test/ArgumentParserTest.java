@@ -34,7 +34,7 @@ public class ArgumentParserTest extends Base {
     }
 
     @Test
-    public void Recognizes_shortform() {
+    public void Recognizes_short_form() {
         Collection<RecognizedArgument> arguments = new Build().parameter("&argument").parse(new String[]{"-a"}).recognizedArguments;
         assertEquals(1, arguments.size());
         RecognizedArgument arg1 = arguments.iterator().next();
@@ -50,7 +50,7 @@ public class ArgumentParserTest extends Base {
     }
 
     @Test
-    public void Recognizes_longform() {
+    public void Recognizes_long_form() {
         Collection<RecognizedArgument> arguments = new Build().parameter("beta").parse(new String[]{"-a", "--beta"}).recognizedArguments;
         assertEquals(1, arguments.size());
         RecognizedArgument first = arguments.iterator().next();
@@ -70,7 +70,7 @@ public class ArgumentParserTest extends Base {
     }
 
     @Test
-    public void It_can_parse_ordinalparameters() {
+    public void It_can_parse_ordinal_parameters() {
         ArgumentParameter o = OrdinalParameter.tryParse("#1first");
         assertNotNull(o);
     }
@@ -138,13 +138,10 @@ public class ArgumentParserTest extends Base {
         assertEquals(0, arguments.size());
     }
 
-    @Test
+    @Test(expected=MissingArgumentException.class)
     public void It_will_fail_if_argument_not_supplied_and_it_is_required() {
-        try {
-            new Build().parameter("beta", true).parse(new String[]{"-a", "value"});
-            fail();
-        } catch (MissingArgumentException e) {
-        }
+        new Build().parameter("beta", true).parse(new String[]{"-a", "value"});
+        fail();
     }
 
     @Test
@@ -190,8 +187,8 @@ public class ArgumentParserTest extends Base {
         {
             assertEquals(MyController.class,t);
             return
-                    (Object)
-                            new MyController().setOnAction((p1) -> toString(count.next()));
+                    (Object)new MyController()
+                                    .setOnAction((p1) -> ((Object)count.next()).toString());
         };
         ParsedArguments arguments = new Build()
             .recognizeClass(MyController.class)
@@ -223,7 +220,7 @@ public class ArgumentParserTest extends Base {
                 .get();
         List<Argument> recognizers = first.getRecognizers("action");
         assertArrayEquals(
-                dictionaryDescriptionToKv("[param1, true], [param2, true], [param3, true], [param4, true]", s -> Boolean.parseBoolean(s)).toArray(),
+                dictionaryDescriptionToKv("[param1, true], [param2, true], [param3, true], [param4, true]", Boolean::parseBoolean).toArray(),
                 recognizers.stream().map(r -> toSimpleEntry(r.name, r.required)).toArray());
     }
 
@@ -247,7 +244,7 @@ public class ArgumentParserTest extends Base {
                 .get();
         List<Argument> recognizers = first.getRecognizers("action");
         assertArrayEquals(
-                dictionaryDescriptionToKv("[param1, true], [param2, false], [param3, false], [param4, false]", s -> Boolean.parseBoolean(s)).toArray(),
+                dictionaryDescriptionToKv("[param1, true], [param2, false], [param3, false], [param4, false]", Boolean::parseBoolean).toArray(),
                 recognizers.stream().map(r-> toSimpleEntry(r.name,r.required)).toArray() );
     }
 
@@ -298,36 +295,27 @@ public class ArgumentParserTest extends Base {
     }
 
 
-    @Test
+    @Test(expected = MissingArgumentException.class)
     public void It_can_parse_class_and_method_and_fail() {
         Build builder = new Build().recognizeClass(MyController.class);
-        try {
-            builder.parse(new String[]{"My", "action", "--param2", "value2", "--paramX", "3", "--param1", "value1", "--param4", "3.4"});
-            fail();
-        } catch (MissingArgumentException e) {
-        }
+        builder.parse(new String[]{"My", "action", "--param2", "value2", "--paramX", "3", "--param1", "value1", "--param4", "3.4"});
+        fail();
     }
 
-    @Test
+    @Test(expected = TypeConversionFailedException.class)
     public void It_can_parse_class_and_method_and_fail_because_of_type_conversion() {
         Build builder = new Build()
                 .setFactory(c -> new SingleIntAction())
                 .recognizeClass(SingleIntAction.class);
-        try {
-            builder.parse(new String[]{"SingleIntAction", "action", "--param", "value"});
-            fail();
-        } catch (TypeConversionFailedException e) {
-        }
+        builder.parse(new String[]{"SingleIntAction", "action", "--param", "value"});
+        fail();
     }
 
-    @Test
+    @Test(expected = MissingArgumentException.class)
     public void It_can_parse_class_and_method_and_fail_because_no_arguments_given() {
         Build builder = new Build().recognizeClass(MyController.class);
-        try {
-            builder.parse(new String[]{"My", "action"});
-            fail();
-        } catch (MissingArgumentException e) {
-        }
+        builder.parse(new String[]{"My", "action"});
+        fail();
     }
 
     @Test
@@ -362,9 +350,7 @@ public class ArgumentParserTest extends Base {
                 .setFactory(c -> {
                     assertEquals(WithIndexController.class, c);
                     return new WithIndexController() {
-
-                        @Override
-                        public String Index(Param p) {
+                        public String index(Param p) {
                             count.next();
                             return null;
                         }

@@ -4,7 +4,7 @@
  */
 package jisop.test;
 
-import jisop.infrastructure.StringUtils;
+import jisop.infrastructure.Strings;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
@@ -12,11 +12,11 @@ import static org.junit.Assert.*;
  *
  * @author mathieu
  */
-public class StringUtilsTest {
+public class StringsTest {
     @Test
     public void Test(){
         String[] expected = { "a", "beta","gamma"};
-        assertArrayEquals(expected, StringUtils.split("a,beta,gamma", ','));
-        //assert StringUtils.split(
+        assertArrayEquals(expected, Strings.split("a,beta,gamma", ','));
+        //assert Strings.split(
     }
 }

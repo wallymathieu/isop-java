@@ -1,15 +1,7 @@
 package jisop.domain;
 
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
-
-import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.util.*;
-import java.util.function.BiConsumer;
-import java.util.function.BinaryOperator;
-import java.util.function.Function;
-import java.util.function.Supplier;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
@@ -24,18 +16,21 @@ public class TableFormatter implements Formatter {
         {
             if (value instanceof String){
                 return Stream.of((String) value);
-            } else if (value.getClass().isPrimitive()){
+            }
+            if (value.getClass().isPrimitive()){
                 return Stream.of(value.toString());
-            } else if (value.getClass().isArray()){
+            }
+            if (value.getClass().isArray()){
                 List<Object> array= Arrays.asList((Object[])value);
                 return getStringStream(array.stream());
-            }  if (value instanceof Collection){
-                return getStringStream(((Collection) value).stream());
-            } else if (value instanceof Stream){
-                return getStringStream((Stream) value);
-            } else {
-                return getStringStream(Stream.of(value));
             }
+            if (value instanceof Collection){
+                return getStringStream(((Collection) value).stream());
+            }
+            if (value instanceof Stream){
+                return getStringStream((Stream) value);
+            }
+            return getStringStream(Stream.of(value));
         }
         return Stream.empty();
     }
@@ -69,7 +64,7 @@ public class TableFormatter implements Formatter {
         return String.join("\t",
                 Arrays.asList(fields)
                         .stream()
-                        .map(prop -> prop.getName())
+                        .map(Field::getName)
                         .collect(Collectors.toList()));
     }
     private String line(Field[] fields, Object item)

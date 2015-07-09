@@ -15,10 +15,9 @@ public class OrdinalParameter {
             Matcher match = pattern.matcher(value);
             if (match.matches())
             {
-                String prototype = value;
                 String rest = match.group(2);
                 ArgumentParameter param = ArgumentParameter.parse(rest);
-                return new ArgumentParameter(prototype, 
+                return new ArgumentParameter(value,
                         param.aliases, param.delimiter,
                         Integer.parseInt(match.group(1)));
             }

@@ -39,16 +39,9 @@ public class Argument {
             return false;
         }
         final Argument other = (Argument) obj;
-        if (!Objects.equals(this.description, other.description)) {
-            return false;
-        }
-        if (!Objects.equals(this.name, other.name)) {
-            return false;
-        }
-        if (!Objects.equals(this.required, other.required)) {
-            return false;
-        }
-        return true;
+        return Objects.equals(this.description, other.description) &&
+                Objects.equals(this.name, other.name) &&
+                Objects.equals(this.required, other.required);
     }
     public String toString(){
         return String.format("%s:%s", name, description);

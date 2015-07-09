@@ -10,30 +10,33 @@ import java.util.logging.Logger;
 /**
  * Created by mathieu.
  */
-public class Activator {
-
-    public static Object createInstance(Class<?> type, Function<Class, Object> getInstance){
+public final class Activator {
+    private Activator() {
+    }
+    public static Object createInstance(Class<?> type, Function<Class, Object> getInstance) {
         try {
-            for (Constructor c: type.getConstructors()) {
-                return c.newInstance(Arrays.asList( c.getParameterTypes() )
-                        .stream()
-                        .map(t->getInstance.apply(t))
-                        .toArray());
-            }
-            throw new RuntimeException("Could not find constructor");
-        } catch (IllegalAccessException ex) {
-            Logger.getLogger(Activator.class.getName()).log(Level.SEVERE, null, ex);
-            throw new RuntimeException("Class: " + type.getName(), ex);
+             return Arrays.asList(type.getConstructors()).stream()
+                     .map(c -> create(c, getInstance))
+                     .findFirst()
+                     .orElseThrow(()->new RuntimeException("Could not find constructor"));
         } catch (IllegalArgumentException ex) {
-            Logger.getLogger(Activator.class.getName()).log(Level.SEVERE, null, ex);
-            throw new RuntimeException("Class: " + type.getName(), ex);
-        } catch (InvocationTargetException ex) {
-            Logger.getLogger(Activator.class.getName()).log(Level.SEVERE, null, ex);
-            throw new RuntimeException("Class: " + type.getName(), ex);
-        } catch (InstantiationException ex) {
-            Logger.getLogger(Activator.class.getName()).log(Level.SEVERE, null, ex);
-            throw new RuntimeException("Class: " + type.getName(), ex);
+            return Fail(type, ex);
         }
+    }
 
+    private static Object create(final Constructor<?> c, final Function<Class, Object> getInstance) {
+        try {
+            return c.newInstance(Arrays.asList(c.getParameterTypes())
+                    .stream()
+                    .map(getInstance::apply)
+                    .toArray());
+        } catch (InstantiationException|IllegalAccessException|InvocationTargetException e) {
+            return Fail(c.getDeclaringClass(), e);
+        }
+    }
+
+    private static Object Fail(Class t, Exception e) {
+        Logger.getLogger(Activator.class.getName()).log(Level.SEVERE, null, e);
+        throw new RuntimeException("Class: " + t.getName(), e);
     }
 }

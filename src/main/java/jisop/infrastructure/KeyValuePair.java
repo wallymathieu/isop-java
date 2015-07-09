@@ -26,24 +26,13 @@ public class KeyValuePair<TKey,TValue> {
 
     @Override
     public boolean equals(Object obj) {
-        if (obj==null){
-            return false;
-        }
-        if (obj instanceof KeyValuePair){
-            return equals((KeyValuePair) obj);
-        }
-        return false;
+        return obj != null &&
+                obj instanceof KeyValuePair &&
+                equals((KeyValuePair) obj);
     }
     public boolean equals(KeyValuePair obj) {
-        if (obj==null){
-            return false;
-        }
-        if (!Objects.equals(obj.key, key)){
-            return false;
-        }
-        if (!Objects.equals(obj.value, value)){
-            return false;
-        }
-        return true;
+        return obj != null &&
+                Objects.equals(obj.key, key) &&
+                Objects.equals(obj.value, value);
     }
 }

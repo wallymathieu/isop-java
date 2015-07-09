@@ -1,7 +1,5 @@
 package jisop.domain;
 
-import sun.misc.Regexp;
-
 import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.Collection;
@@ -47,7 +45,7 @@ public class Parameter {
     private List<FieldInfo> getFields(Class<?> p) {
         List<Field> fields = Arrays.asList(p.getFields());
         return fields.stream()
-                .map(f->new FieldInfoFromField(f))
+                .map(FieldInfoFromField::new)
                 .collect(Collectors.toList());
     }
 

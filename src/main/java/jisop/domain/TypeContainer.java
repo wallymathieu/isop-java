@@ -12,7 +12,7 @@ import java.util.logging.Logger;
 public class TypeContainer implements Function<Class,Object> {
     public TypeContainer()
     {
-        instances= new HashMap<Class, Object>();
+        instances= new HashMap<>();
     }
     
     private HashMap<Class, Object> instances;
@@ -28,10 +28,7 @@ public class TypeContainer implements Function<Class,Object> {
             } else {
                 try {
                     instances.put(c, c.newInstance());
-                } catch (InstantiationException ex) {
-                    Logger.getLogger(TypeContainer.class.getName()).log(Level.SEVERE, null, ex);
-                    throw new RuntimeException(ex);
-                } catch (IllegalAccessException ex) {
+                } catch (InstantiationException | IllegalAccessException ex) {
                     Logger.getLogger(TypeContainer.class.getName()).log(Level.SEVERE, null, ex);
                     throw new RuntimeException(ex);
                 }

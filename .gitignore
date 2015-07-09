@@ -4,8 +4,7 @@ syntax: glob
 *.*~
 *.*.swp
 syntax: regexp
-/[^/]*/nbproject/private/
- 
+
 build/
 nbbuild/
 dist/

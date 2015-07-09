@@ -10,26 +10,22 @@ import java.util.stream.Stream;
  *
  * @author mathieu
  */
-public class StringUtils {
-    public static String join(String delim, Stream<String> array) {
-        return array.collect(Collectors.joining(delim)).trim();
+public final class Strings {
+    private Strings(){}
+    public static String join(String delimiter, Stream<String> array) {
+        return array.collect(Collectors.joining(delimiter)).trim();
     }
-    public static String join(String delim, String[] array) {
-        return join(delim, Arrays.asList(array).stream());
+    public static String join(String delimiter, String[] array) {
+        return join(delimiter, Arrays.asList(array).stream());
     }
 
     public static boolean isNullOrEmpty(String val) {
-        if (null==val)return true;
-        if (val.length()==0) return true;
-        return false;
+        return null == val || val.length() == 0;
     }
 
     public static boolean containsStringIgnoreCase(String[] list, String value) {
-        for (int i = 0; i < list.length; i++) {
-            if (list[i].equalsIgnoreCase(value))
-                return true;
-        }
-        return false;
+        return Arrays.asList(list).stream()
+                .anyMatch(al->al.equalsIgnoreCase(value));
     }
 
     public static String trimEnd(String str, String stripChars) {
@@ -44,7 +40,7 @@ public class StringUtils {
     }
 
     public static String[] split(String str, char val) {
-        List<String> retval = new ArrayList<String>();
+        List<String> retval = new ArrayList<>();
         int last = -1;
         
         for (int i = 0; i < str.length(); i++) {
@@ -56,7 +52,7 @@ public class StringUtils {
         if (last<str.length()){
             retval.add(str.substring(last+1,str.length()));
         }
-        return retval.toArray(new String[0]);
+        return retval.toArray(new String[retval.size()]);
     }
     
 }

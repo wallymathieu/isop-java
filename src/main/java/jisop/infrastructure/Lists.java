@@ -6,40 +6,29 @@ package jisop.infrastructure;
 
 import java.util.*;
 import java.util.function.BiFunction;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
  *
  * @author mathieu
  */
-public class ListUtils {
-    private static <T> List<T> ToList(T[] a)
-    {
-        List<T> a1= new ArrayList();
-        for (int i = 0; i < a.length; i++) {
-            a1.add(a[i]);
-        }
-        return a1;
-    }
+public final class Lists {
+    private Lists(){}
     public static <T> Collection<T> union(Collection<T> a, Collection<T> b) {
-       Set<T> set = new HashSet<T>();
+       Set<T> set = new HashSet<>();
          
         set.addAll(a);
         set.addAll(b);
-        return new ArrayList<T>(set);
+        return new ArrayList<>(set);
     }
     public static <T> List<T> intersect(T[] list1, T[] list2) {
-        return intersect(ToList(list1), ToList(list2));
+        return intersect(Arrays.asList(list1), Arrays.asList(list2));
     }
     public static <T> List<T> intersect(Collection<T> list1, Collection<T> list2) {
-        List<T> list = new ArrayList<T>();
-        for (T t : list1) {
-            if(list2.contains(t)) {
-                list.add(t);
-            }
-        }
-
-        return list;
+        return list1.stream()
+                .filter(list2::contains)
+                .collect(Collectors.toList());
     }
 
     public static <T> Stream<T> filterWithIndex(Collection<T> list, BiFunction<T,Integer,Boolean> filter) {
@@ -60,7 +49,7 @@ public class ListUtils {
     public static <T> Collection<KeyValuePair<Integer,T>> withIndex(List<T> list) {
         List<KeyValuePair<Integer,T>> retv = new ArrayList<>();
         for (int i = 0; i < list.size(); i++) {
-            retv.add(new KeyValuePair<Integer, T>(i, list.get(i)));
+            retv.add(new KeyValuePair<>(i, list.get(i)));
         }
         return retv;
     }

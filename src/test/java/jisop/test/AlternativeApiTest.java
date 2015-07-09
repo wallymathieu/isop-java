@@ -8,7 +8,6 @@ import jisop.test.helpers.MapBuilder;
 import org.junit.Assert;
 import org.junit.Test;
 
-import java.util.Dictionary;
 import java.util.function.Function;
 
 /**

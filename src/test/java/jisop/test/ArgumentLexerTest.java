@@ -48,7 +48,7 @@ public class ArgumentLexerTest {
     }
 
     @Test
-    public void It_can_tokenize_parametervalue() {
+    public void It_can_tokenize_parameter_value() {
         ArgumentLexer lexer = ArgumentLexer.lex(new String[]{"--parameter", "parametervalue"});
         assertArrayEquals(new Token[]{
                     new Token("parameter", TokenType.PARAMETER, 0),
@@ -57,7 +57,7 @@ public class ArgumentLexerTest {
     }
 
     @Test
-    public void It_can_tokenize_parametervalue_slash_and_equals() {
+    public void It_can_tokenize_parameter_value_slash_and_equals() {
         ArgumentLexer lexer = ArgumentLexer.lex(new String[]{"/parameter=parametervalue"});
         assertArrayEquals(new Token[]{
                     new Token("parameter", TokenType.PARAMETER, 0),
@@ -67,7 +67,7 @@ public class ArgumentLexerTest {
     }
 
     @Test
-    public void It_can_tokenize_parametervalue_minus_minus_and_equals() {
+    public void It_can_tokenize_parameter_value_minus_minus_and_equals() {
         ArgumentLexer lexer = ArgumentLexer.lex(new String[]{"--parameter=parametervalue"});
         assertArrayEquals(new Token[]{
                         new Token("parameter", TokenType.PARAMETER, 0),

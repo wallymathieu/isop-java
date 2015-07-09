@@ -2,10 +2,9 @@ package jisop.test;
 
 import jisop.Build;
 import jisop.command_line.parse.ParsedArguments;
-import jisop.infrastructure.StringUtils;
+import jisop.infrastructure.Strings;
 import jisop.test.fake_controllers.ObjectController;
 import jisop.test.helpers.Counter;
-import jisop.test.testData.WithTwoFields;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -22,7 +21,7 @@ public class StringFormatterTest {
         Function<Class, Object> factory = (Class t) ->{
             Assert.assertEquals(ObjectController.class, t);
             ObjectController o= new ObjectController();
-            o.onAction = () -> count.next();
+            o.onAction = count::next;
             return (Object)o;
         };
         ParsedArguments arguments = new Build()
@@ -31,7 +30,7 @@ public class StringFormatterTest {
                 .parse(new String[] { "Object", "Action" });
 
         Assert.assertEquals(0, arguments.unRecognizedArguments.size());
-        String result = StringUtils.join("\n", arguments.invoke());
+        String result = Strings.join("\n", arguments.invoke());
         Assert.assertEquals("1",
                 result);
     }
@@ -54,7 +53,7 @@ public class StringFormatterTest {
                 .parse(new String[]{"Object", "Action"});
 
         Assert.assertEquals(0, arguments.unRecognizedArguments.size());
-        String result = StringUtils.join("\n", arguments.invoke());
+        String result = Strings.join("\n", arguments.invoke());
         Assert.assertEquals("1\n2",
                 result);
     }
@@ -64,10 +63,9 @@ public class StringFormatterTest {
         Function<Class, Object> factory = (Class t) -> {
             Assert.assertEquals(ObjectController.class, t);
             ObjectController o= new ObjectController();
-            o.onAction = () -> Arrays.asList(new Object[]{
+            o.onAction = () -> Arrays.asList(
                     count.next(),
-                    count.next()
-            });
+                    count.next());
             return (Object)o;
         };
         ParsedArguments arguments = new Build()
@@ -76,7 +74,7 @@ public class StringFormatterTest {
                 .parse(new String[]{"Object", "Action"});
 
         Assert.assertEquals(0, arguments.unRecognizedArguments.size());
-        String result = StringUtils.join("\n", arguments.invoke());
+        String result = Strings.join("\n", arguments.invoke());
         Assert.assertEquals("1\n2",
                 result);
     }

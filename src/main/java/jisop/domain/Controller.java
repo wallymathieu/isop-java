@@ -84,13 +84,8 @@ public class Controller {
         return type == HelpController.class; // Is there a better way to do this?
     }
 
-    public boolean equals(Object obj)
-    {
-        if (obj instanceof Controller)
-        {
-            return Equals((Controller)obj);
-        }
-        return false;
+    public boolean equals(Object obj) {
+        return obj instanceof Controller && Equals((Controller) obj);
     }
     public boolean Equals(Controller obj)
     {

@@ -28,13 +28,8 @@ public class UnrecognizedArgument {
             return false;
         }
         final UnrecognizedArgument other = (UnrecognizedArgument) obj;
-        if (this.index != other.index) {
-            return false;
-        }
-        if ((this.value == null) ? (other.value != null) : !this.value.equals(other.value)) {
-            return false;
-        }
-        return true;
+        return this.index == other.index &&
+                this.value.equals(other.value);
     }
 
 }

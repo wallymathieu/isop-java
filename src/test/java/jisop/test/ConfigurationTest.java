@@ -1,9 +1,6 @@
 package jisop.test;
 
-import jisop.Build;
 import jisop.test.testData.FullConfiguration;
-import org.junit.Assert;
-import org.junit.Test;
 
 /**
  * Created by mathieu.

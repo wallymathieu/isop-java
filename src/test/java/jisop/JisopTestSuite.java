@@ -18,8 +18,8 @@ import org.junit.runners.Suite;
 @Suite.SuiteClasses({
         ArgumentParserTest.class,
         ArgumentLexerTest.class,
-        ListUtilsTest.class,
-        StringUtilsTest.class,
+        ListsTest.class,
+        StringsTest.class,
         TableFormatterTest.class,
         StringFormatterTest.class,
         AlternativeApiTest.class,

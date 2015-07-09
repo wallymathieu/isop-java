@@ -58,19 +58,10 @@ public class RecognizedArgument {
             return false;
         }
         final RecognizedArgument other = (RecognizedArgument) obj;
-        if (!Objects.equals(this.value, other.value)) {
-            return false;
-        }
-        if (!Objects.equals(this.index, other.index)) {
-            return false;
-        }
-        if (!Objects.equals(this.rawArgument, other.rawArgument)) {
-            return false;
-        }
-        if (!Objects.equals(this.argument, other.argument)) {
-            return false;
-        }
-        return true;
+        return Objects.equals(this.value, other.value) &&
+               Objects.equals(this.index, other.index) &&
+               Objects.equals(this.rawArgument, other.rawArgument) &&
+               Objects.equals(this.argument, other.argument);
     }
     public String toString(){
         return String.format("%1s: %2s", this.argument,this.value);

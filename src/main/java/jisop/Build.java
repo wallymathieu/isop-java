@@ -69,7 +69,7 @@ public class Build {
         ParsedArguments parsedArguments = argumentParser.parse(lexed, Arrays.asList(arg));
         ControllerRecognizer controllerRecognizer = getControllerRecognizers()
                 .values().stream()
-                .map(cr -> cr.get())
+                .map(Supplier::get)
                 .filter(cr -> cr.recognize(arg))
                 .findFirst()
                 .orElse(null);
@@ -113,7 +113,7 @@ public class Build {
         return _configuration.recognizes.stream()
                 .collect(Collectors.toMap(
                         c -> c.type,
-                        c -> getRecognizerSupplier(c)));
+                        this::getRecognizerSupplier));
     }
 
     private Supplier<ControllerRecognizer> getRecognizerSupplier(Controller c){

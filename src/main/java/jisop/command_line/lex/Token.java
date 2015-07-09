@@ -22,13 +22,9 @@ public class Token {
 
     @Override
     public boolean equals(Object obj) {
-        if (null == obj) {
-            return false;
-        }
-        if (obj.getClass()!=Token.class){
-            return false;
-        }
-        return this.equals((Token) obj);
+        return null != obj &&
+                obj instanceof Token &&
+                this.equals((Token) obj);
     }
 
     @Override
@@ -40,13 +36,12 @@ public class Token {
     }
 
     public boolean equals(Token obj) {
-        if (null == obj) {
-            return false;
-        }
-        return value.equals(obj.value) && tokenType.equals(obj.tokenType);
+        return null != obj &&
+                value.equals(obj.value) &&
+                tokenType.equals(obj.tokenType);
     }
     @Override
     public String toString(){
-        return String.format("%1s: '%2s'", tokenType.toString(), value.toString());
+        return String.format("%1s: '%2s'", tokenType, value);
     }
 }

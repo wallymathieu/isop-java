@@ -1,7 +1,6 @@
 package jisop.domain;
 
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -14,7 +13,7 @@ public class Conventions {
     public static Set<String> ConfigurationName = IgnoreCase(new String[]{"isopconfiguration"});
 
     private static Set<String> IgnoreCase(String[] strings) {
-        Set<String> s= new TreeSet<String>(String.CASE_INSENSITIVE_ORDER);
+        Set<String> s= new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
         s.addAll(Arrays.asList(strings));
         return s;
     }

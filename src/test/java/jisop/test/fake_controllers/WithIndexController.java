@@ -21,7 +21,7 @@ public class WithIndexController {
     public WithIndexController() {
     }
 
-    public String Index(Param p) {
+    public String index(Param p) {
         //    return OnIndex(param1, param2, param3, param4); 
         return null;
     }

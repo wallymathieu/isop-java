@@ -1,6 +1,6 @@
 package jisop.command_line.parse;
 
-import jisop.infrastructure.StringUtils;
+import jisop.infrastructure.Strings;
 
 /**
  *
@@ -11,10 +11,9 @@ class OptionParameter {
         {
             if (value.contains("|"))
             {
-                String prototype = value;
-                String[] names = StringUtils.split(StringUtils.trimEnd(prototype, "=:"), '|');
+                String[] names = Strings.split(Strings.trimEnd(value, "=:"), '|');
                 String delimiter = null;
-                String last = prototype.substring(prototype.length()-2, prototype.length()-1);
+                String last = value.substring(value.length()-2, value.length()-1);
                 switch (last.charAt(0))
                 {
                     case '=':
@@ -24,7 +23,7 @@ class OptionParameter {
                     default:
                         break;
                 }
-                return new ArgumentParameter(prototype, names, delimiter, null);
+                return new ArgumentParameter(value, names, delimiter, null);
             }
             return null;
         }

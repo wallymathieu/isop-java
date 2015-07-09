@@ -4,9 +4,8 @@
  */
 package jisop.command_line.parse;
 
-import jisop.infrastructure.ListUtils;
+import jisop.infrastructure.Lists;
 
-import java.io.OutputStream;
 import java.util.stream.Stream;
 
 /**
@@ -19,9 +18,9 @@ class MergedParsedArguments extends ParsedArguments {
 
     public MergedParsedArguments(ParsedArguments first, ParsedArguments second){
         super(
-                ListUtils.union(first.argumentWithOptions,second.argumentWithOptions),
-                ListUtils.union(first.recognizedArguments, second.recognizedArguments),
-                ListUtils.intersect(first.unRecognizedArguments,second.unRecognizedArguments)
+                Lists.union(first.argumentWithOptions, second.argumentWithOptions),
+                Lists.union(first.recognizedArguments, second.recognizedArguments),
+                Lists.intersect(first.unRecognizedArguments, second.unRecognizedArguments)
                 );
          _first = first;
         _second = second;

@@ -4,7 +4,6 @@ import jisop.MissingArgumentException;
 import jisop.domain.Argument;
 import jisop.infrastructure.KeyValuePair;
 
-import java.io.OutputStream;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -62,13 +61,13 @@ public class ParsedArguments {
 
         if (unMatchedRequiredArguments.size() > 0) {
             throw new MissingArgumentException("Missing arguments",
-                    unMatchedRequiredArguments.stream().map(a->a.name).toArray(size->new String[size]));
+                    unMatchedRequiredArguments.stream().map(a->a.name).toArray(String[]::new));
         }
     }
 
     public Collection<KeyValuePair<String, String>> RecognizedArgumentsAsPairs() {
         return recognizedArguments.stream()
-                .map(r-> r.asKeyValue())
+                .map(RecognizedArgument::asKeyValue)
                 .collect(Collectors.toList());
     }
 }

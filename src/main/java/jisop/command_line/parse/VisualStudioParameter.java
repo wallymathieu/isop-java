@@ -16,13 +16,13 @@ class VisualStudioParameter {
     /// </summary>
 
     public static final Pattern VisualStudioArgPattern =
-            Pattern.compile("(\\&?)(.)[^=:]*([=:]?)");
+            Pattern.compile("(&?)(.)[^=:]*([=:]?)");
 
     public static ArgumentParameter tryParse(String value) {
         //TODO: need to do some cleaning here
         Matcher match = VisualStudioArgPattern.matcher(value);
         if (match.matches()) {
-            LinkedList<String> aliases = new LinkedList<String>();
+            LinkedList<String> aliases = new LinkedList<>();
             String val;
             if (match.group(1).length() > 0) {
                 val = value.replace("&", "");
@@ -43,7 +43,7 @@ class VisualStudioParameter {
 
             return new ArgumentParameter(
                     value,
-                    aliases.toArray(new String[0]),
+                    aliases.toArray(new String[aliases.size()]),
                     delimiter,
                     null);
 

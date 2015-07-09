@@ -8,9 +8,11 @@ import jisop.command_line.parse.ArgumentParser;
 import jisop.command_line.parse.ArgumentWithOptions;
 import jisop.command_line.parse.ParsedArguments;
 import jisop.domain.*;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -82,10 +84,10 @@ public class ControllerRecognizer {
         Method methodInfo = findMethodInfo(lexed);
 
         List<Argument> argumentRecognizers = methodInfo.getArguments();
-        argumentRecognizers.addAll(0, Arrays.asList(new ArgumentWithOptions[]{
+        argumentRecognizers.addAll(0, Arrays.asList(
                 new ArgumentWithOptions(ArgumentParameter.parse("#0" + _controller.name)).type(String.class).required(true),
-                new ArgumentWithOptions(ArgumentParameter.parse("#1" + methodInfo.name)).required(false).type(String.class)
-        }));
+                new ArgumentWithOptions(ArgumentParameter.parse("#1" + methodInfo.name)).required(false).type(String.class))
+        );
 
         ArgumentParser parser = new ArgumentParser(argumentRecognizers, _allowInferParameter);
         ParsedArguments parsedArguments = parser.parse(lexed, Arrays.asList(arg));
@@ -101,8 +103,9 @@ public class ControllerRecognizer {
         if (foundClassName)
         {
             String methodName = arg.get(1).value;
-            Method methodInfo = FindMethodAmongLexedTokens.findMethod(_controller.getControllerActionMethods(), methodName, arg);
-            return methodInfo;
+            return FindMethodAmongLexedTokens.findMethod(
+                    _controller.getControllerActionMethods(),
+                    methodName, arg);
         }
         return null;
     }
@@ -113,7 +116,7 @@ public class ControllerRecognizer {
         if (unMatchedRequiredArguments.stream().anyMatch(a -> true))
         {
             throw new MissingArgumentException("Missing arguments",
-                    unMatchedRequiredArguments.stream().map(a->a.name).toArray(size->new String[size]))
+                    unMatchedRequiredArguments.stream().map(a->a.name).toArray(String[]::new))
             ;
         }
         ConvertArgumentsToParameterValue convertArgument = new ConvertArgumentsToParameterValue(_configuration.typeConverter);

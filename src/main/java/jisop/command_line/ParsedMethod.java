@@ -37,9 +37,7 @@ public class ParsedMethod extends ParsedArguments {
         Object retval = null;
         try {
             retval = recognizedAction.invoke(instance, recognizedActionParameters);
-        } catch (IllegalAccessException e) {
-            throw new RuntimeException(e);
-        } catch (InvocationTargetException e) {
+        } catch (IllegalAccessException | InvocationTargetException e) {
             throw new RuntimeException(e);
         }
         return configuration.formatter.format(retval);
