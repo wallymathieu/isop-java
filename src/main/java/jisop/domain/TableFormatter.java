@@ -49,13 +49,13 @@ public class TableFormatter implements Formatter {
             fields = getFields(type);
 
             return Stream.concat(Stream.of(header(fields), line(fields, head)),
-                    streamOf(it, o -> line(fields, o)));
+                    streamOf(it).map(o -> line(fields, o)));
         }
         return Stream.empty();
     }
-    private Stream<String> streamOf(Iterator<Object> it, Function<Object,String> map){
+    private Stream<Object> streamOf(Iterator<Object> it){
         return StreamSupport.stream(Spliterators.spliteratorUnknownSize(it,
-                Spliterator.ORDERED),false).map(map);
+                Spliterator.ORDERED), false);
     }
 
     private Field[] getFields(Class t) {
