@@ -4,8 +4,8 @@ package jisop.infrastructure;
  *
  * @author mathieu
  */
-public class Objects {
-
+public final class Objects {
+    private Objects(){}
     public static int hashCode(Object Value) {
         if (null==Value) return 0;
         return Value.hashCode();
