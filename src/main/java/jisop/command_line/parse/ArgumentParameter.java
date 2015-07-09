@@ -9,56 +9,51 @@ import java.util.Arrays;
  * @author mathieu
  */
 public class ArgumentParameter {
-
-    public ArgumentParameter(String prototype, String[] names) {
-        this(prototype, names, null, null);
-    }
-
     public ArgumentParameter(String prototype, String[] names, String delimiter, Integer ordinal) {
-        Prototype = prototype;
-        Aliases = names;
-        Delimiter = delimiter;
-        Ordinal = ordinal;
+        this.prototype = prototype;
+        aliases = names;
+        this.delimiter = delimiter;
+        this.ordinal = ordinal;
     }
-    public final String Prototype;
-    public final Integer Ordinal;
+    public final String prototype;
+    public final Integer ordinal;
 
     public static ArgumentParameter parse(String value) {
         ArgumentParameter ordinalParameter= OrdinalParameter.tryParse(value);
         if (ordinalParameter!=null)
-                return ordinalParameter;
+            return ordinalParameter;
         ArgumentParameter optionParameter= OptionParameter.tryParse(value);
         if (optionParameter!=null)
-                return optionParameter;
+            return optionParameter;
         ArgumentParameter visualStudioParameter= VisualStudioParameter.tryParse(value);
         if (visualStudioParameter!=null)
-                return visualStudioParameter;
+            return visualStudioParameter;
         throw new RuntimeException("failed to parse "+value);
     }
-    public final String[] Aliases;
-    public final String Delimiter;
+    public final String[] aliases;
+    public final String delimiter;
 
     public String help() {
-        return "--" + StringUtils.join(", or ", Aliases)
-                + (StringUtils.isNullOrEmpty(Delimiter)
+        return "--" + StringUtils.join(", or ", aliases)
+                + (StringUtils.isNullOrEmpty(delimiter)
                 ? ""
-                : " " + Delimiter);
+                : " " + delimiter);
     }
 
     @Override
     public String toString() {
-        return Prototype;
+        return prototype;
     }
 
     public boolean hasAlias(String value) {
-        return StringUtils.containsStringIgnoreCase(Aliases, value);
+        return StringUtils.containsStringIgnoreCase(aliases, value);
     }
 
     public boolean accept(int index, String val) {
-        if (Ordinal==null) {
+        if (ordinal ==null) {
             return hasAlias(val);
         } else {
-            return Ordinal.intValue() == index && hasAlias(val);
+            return ordinal.equals(index) && hasAlias(val);
         }
     }
     public boolean accept(String val) {
@@ -66,7 +61,7 @@ public class ArgumentParameter {
     }
 
     public String longAlias() {
-        return Arrays.asList( Aliases )
+        return Arrays.asList(aliases)
                 .stream()
                 .max( (a,b) -> Integer.compare(a.length(),b.length()))
                 .orElse(null);

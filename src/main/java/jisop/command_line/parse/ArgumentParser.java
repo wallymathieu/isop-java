@@ -71,7 +71,7 @@ public class ArgumentParser {
 
                     if (null == argumentWithOptions && !encounteredParameter && _allowInferParameter)
                     {
-                        InferParameter(recognizedIndexes, recognized, current);
+                        inferParameter(recognizedIndexes, recognized, current);
                         continue;
                     }
 
@@ -138,10 +138,10 @@ public class ArgumentParser {
         return new ParsedArguments(_argumentWithOptions,recognized,unRecognizedArguments);
     }
 
-    private void InferParameter(List<Integer> recognizedIndexes, List<RecognizedArgument> recognized, Token current) {
+    private void inferParameter(List<Integer> recognizedIndexes, List<RecognizedArgument> recognized, Token current) {
         Argument argumentWithOptions;
         argumentWithOptions = ListUtils
-                .filterWithIndex(_argumentWithOptions, (argOpts,i)->i==current.index)
+                .filterWithIndex(_argumentWithOptions, (argOpts,i)->i.equals(current.index))
                 .findFirst()
                 .orElse(null)
         ;
@@ -162,7 +162,7 @@ public class ArgumentParser {
 
         if (argument instanceof ArgumentWithOptions)
         {
-            return ((ArgumentWithOptions)argument).Argument.accept(index, value);
+            return ((ArgumentWithOptions)argument).argument.accept(index, value);
         }
         return ArgumentParameter.parse(argument.name).accept(index, value);
     }
@@ -171,7 +171,7 @@ public class ArgumentParser {
 
         if (argument instanceof ArgumentWithOptions)
         {
-            return ((ArgumentWithOptions)argument).Argument.accept(value);
+            return ((ArgumentWithOptions)argument).argument.accept(value);
         }
         return ArgumentParameter.parse(argument.name).accept(value);
     }

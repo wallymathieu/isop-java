@@ -116,7 +116,7 @@ public class ArgumentParserTest extends Base {
         };
         assertArrayEquals(expected, unRecognizedArguments.toArray());
     }
-    //@Test TODO: Not implemented!
+    @Test
     public void It_can_infer_ordinal_usage_of_named_parameters()
     {
         Collection<RecognizedArgument> arguments = new Build()
@@ -181,7 +181,7 @@ public class ArgumentParserTest extends Base {
         assertEquals(1, count.getCount());
     }
 
-    //@Test TODO: Not implemented!
+    @Test
     public void It_can_parse_class_and_method_and_execute_with_ordinal_syntax()
     {
         Counter count = new Counter();

@@ -19,7 +19,7 @@ import java.util.stream.StreamSupport;
  */
 public class TableFormatter implements Formatter {
 
-    public Stream<String> Format(Object value) {
+    public Stream<String> format(Object value) {
         if (value != null)
         {
             if (value instanceof String){
@@ -48,8 +48,10 @@ public class TableFormatter implements Formatter {
             Class type = head.getClass();
             fields = getFields(type);
 
-            return Stream.concat(Stream.of(header(fields), line(fields, head)),
-                    streamOf(it).map(o -> line(fields, o)));
+            return Stream.concat(Stream.of(
+                            header(fields),
+                            line(fields, head)),
+                            streamOf(it).map(o -> line(fields, o)));
         }
         return Stream.empty();
     }

@@ -50,7 +50,7 @@ public class Method {
             } else {
                 throw new RuntimeException("");
                 //var recognizedArgument =  parsedArguments.RecognizedArguments.First(
-                //    a => a.Argument.ToUpperInvariant().Equals(paramInfo.name.ToUpperInvariant()));
+                //    a => a.argument.ToUpperInvariant().Equals(paramInfo.name.ToUpperInvariant()));
                 //parameters.Add( ConvertFrom (recognizedArgument, paramInfo.ParameterType));
             }
         }

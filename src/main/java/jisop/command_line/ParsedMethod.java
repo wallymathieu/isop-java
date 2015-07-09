@@ -42,6 +42,6 @@ public class ParsedMethod extends ParsedArguments {
         } catch (InvocationTargetException e) {
             throw new RuntimeException(e);
         }
-        return configuration.formatter.Format(retval);
+        return configuration.formatter.format(retval);
     }
 }

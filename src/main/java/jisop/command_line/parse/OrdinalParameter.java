@@ -1,7 +1,5 @@
 package jisop.command_line.parse;
 
-import jisop.command_line.parse.ArgumentParameter;
-
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -21,7 +19,7 @@ public class OrdinalParameter {
                 String rest = match.group(2);
                 ArgumentParameter param = ArgumentParameter.parse(rest);
                 return new ArgumentParameter(prototype, 
-                        param.Aliases, param.Delimiter, 
+                        param.aliases, param.delimiter,
                         Integer.parseInt(match.group(1)));
             }
             return null;

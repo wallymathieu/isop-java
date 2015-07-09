@@ -11,7 +11,7 @@ import java.util.stream.Stream;
  */
 public class ToStringFormatter implements Formatter {
     @Override
-    public Stream<String> Format(Object value) {
+    public Stream<String> format(Object value) {
         Stream<String> r= Stream.empty();
         if (value != null)
         {

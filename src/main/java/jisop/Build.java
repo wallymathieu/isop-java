@@ -27,7 +27,7 @@ import sun.reflect.generics.reflectiveObjects.NotImplementedException;
  */
 public class Build {
     private final Configuration _configuration = new Configuration();
-    public boolean _allowInferParameter; // TODO:FIX
+    public boolean _allowInferParameter = true; // TODO:FIX
     private final TypeContainer _container = new TypeContainer();
     private HelpController _helpController;
     private HelpForControllers _helpForControllers;
@@ -150,11 +150,12 @@ public class Build {
         return new ControllerExpression(controllerName, this);
     }
 
+    /*
     public Build configurationFrom(String path) {
         throw new NotImplementedException();
     }
 
     public Build configuration(Object conf) {
         throw new NotImplementedException();
-    }
+    }*/
 }

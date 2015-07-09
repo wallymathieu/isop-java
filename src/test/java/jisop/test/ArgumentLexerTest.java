@@ -78,8 +78,8 @@ public class ArgumentLexerTest {
     @Test
     public void It_can_peek_tokenized_value() {
 
-        PeekCollection<Token> lexer = new PeekCollection<Token>(ArgumentLexer.lex(new String[]{
-                    "--parameter=parametervalue", "argument"}));
+        PeekCollection<Token> lexer = new PeekCollection<>(ArgumentLexer.lex(new String[]{
+                "--parameter=parametervalue", "argument"}));
         lexer.next();
         Token first = lexer.peek();
         assertEquals(new Token("parametervalue", TokenType.PARAMETER_VALUE, 1),
