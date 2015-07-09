@@ -20,7 +20,8 @@ import org.junit.runners.Suite;
         ArgumentLexerTest.class,
         ListUtilsTest.class,
         StringUtilsTest.class,
-        ReturnValueFormatterTest.class,
+        TableFormatterTest.class,
+        StringFormatterTest.class,
         AlternativeApiTest.class,
         //ConfigurationTest.class
 })

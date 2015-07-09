@@ -12,26 +12,26 @@ import java.util.stream.Stream;
 public class ToStringFormatter implements Formatter {
     @Override
     public Stream<String> format(Object value) {
-        Stream<String> r= Stream.empty();
         if (value != null)
         {
             if (value instanceof String){
-                r = Stream.concat(r, Stream.of((String) value));
+                return Stream.of((String) value);
             }else if (value.getClass().isPrimitive()){
-                r = Stream.concat(r, Stream.of(value.toString()));
-            }else if (value instanceof Collection){
-                r = Stream.concat(r, toStrings(((Collection) value).stream()));
+                return Stream.of(value.toString());
+            }else if (value.getClass().isArray()){
+                return toStrings(Arrays.asList((Object[]) value).stream());
+            }if (value instanceof Collection){
+                return toStrings(((Collection) value).stream());
             }else if (value instanceof Stream){
-                r = Stream.concat(r, toStrings((Stream) value));
+                return toStrings((Stream) value);
             }else{
-                r = Stream.concat(r, Stream.of(value.toString()));
+                return Stream.of(value.toString());
             }
         }
-        return r;
+        return Stream.empty();
     }
 
     private Stream toStrings(Stream value) {
-        return value
-                .map(v -> v.toString());
+        return value.map(v -> v.toString());
     }
 }

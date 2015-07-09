@@ -15,7 +15,7 @@ import java.util.function.Function;
 /**
  * Created by mathieu.
  */
-public class ReturnValueFormatterTest {
+public class TableFormatterTest {
     @Test
     public void It_can_format_object_as_table() {
         Counter count = new Counter();
