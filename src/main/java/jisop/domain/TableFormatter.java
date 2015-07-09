@@ -12,6 +12,7 @@ import java.util.function.Supplier;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 /**
  * Created by mathieu.
@@ -53,9 +54,8 @@ public class TableFormatter implements Formatter {
         return Stream.empty();
     }
     private Stream<String> streamOf(Iterator<Object> it, Function<Object,String> map){
-        Stream.Builder<String> b = Stream.builder();
-        it.forEachRemaining(o->b.accept(map.apply(o)));
-        return b.build();
+        return StreamSupport.stream(Spliterators.spliteratorUnknownSize(it,
+                Spliterator.ORDERED),false).map(map);
     }
 
     private Field[] getFields(Class t) {
