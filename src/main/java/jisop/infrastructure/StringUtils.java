@@ -12,7 +12,7 @@ import java.util.stream.Stream;
  */
 public class StringUtils {
     public static String join(String delim, Stream<String> array) {
-        return array.collect(Collectors.joining(delim));
+        return array.collect(Collectors.joining(delim)).trim();
     }
     public static String join(String delim, String[] array) {
         return join(delim, Arrays.asList(array).stream());

@@ -1,9 +1,15 @@
 package jisop.domain;
 
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
+
+import java.lang.reflect.Array;
 import java.lang.reflect.Field;
-import java.lang.reflect.Type;
-import java.util.Arrays;
-import java.util.Collection;
+import java.util.*;
+import java.util.function.BiConsumer;
+import java.util.function.BinaryOperator;
+import java.util.function.Function;
+import java.util.function.Supplier;
+import java.util.stream.Collector;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -13,39 +19,46 @@ import java.util.stream.Stream;
 public class TableFormatter implements Formatter {
 
     public Stream<String> Format(Object value) {
-        Stream<String> r= Stream.empty();
         if (value != null)
         {
             if (value instanceof String){
-                r = Stream.concat(r, Stream.of((String) value));
+                return Stream.of((String) value);
             } else if (value.getClass().isPrimitive()){
-                r = Stream.concat(r, Stream.of(value.toString()));
-            } else if (value instanceof Collection){
-                r = Stream.concat(r, getStringStream(((Collection) value).stream()));
-            } else  if (value instanceof Stream){
-                r = Stream.concat(r, getStringStream((Stream) value));
+                return Stream.of(value.toString());
+            } else if (value.getClass().isArray()){
+                List<Object> array= Arrays.asList(value);
+                return getStringStream(array.stream());
+            }  if (value instanceof Collection){
+                return getStringStream(((Collection) value).stream());
+            } else if (value instanceof Stream){
+                return getStringStream((Stream) value);
             } else {
-                r = Stream.concat(r, getStringStream(Stream.of(value)));
+                return getStringStream(Stream.of(value));
             }
         }
-        return r;
+        return Stream.empty();
     }
 
-    private Stream<String> getStringStream(Stream value) {
-        Type if1 = Arrays.asList(value.getClass().getGenericInterfaces())
-                .stream()
-                .filter((Type iff) -> isCollectionType((Class) iff))
-                .findFirst()
-                .orElse(null);
-        Type type = if1.getClass().getGenericInterfaces()[0];
-        Field[] properties = getFields((Class) type);
-        Stream r = Stream.of(header(properties));
-        r = Stream.concat(r, value.map(item -> line(properties, item)));
-        return r;
+    private Stream<String> getStringStream(Stream<Object> value) {
+        Iterator<Object> it = value.iterator();
+        Field[] fields;
+        if (it.hasNext()) {
+            Object head = it.next();
+            Class type = head.getClass();
+            fields = getFields(type);
+
+            return Stream.concat(Stream.of(header(fields), line(fields, head)),
+                    streamOf(it, o -> line(fields, o)));
+        }
+        return Stream.empty();
+    }
+    private Stream<String> streamOf(Iterator<Object> it, Function<Object,String> map){
+        Stream.Builder<String> b = Stream.builder();
+        it.forEachRemaining(o->b.accept(map.apply(o)));
+        return b.build();
     }
 
-    private Field[] getFields(Class t)
-    {
+    private Field[] getFields(Class t) {
         return t.getFields();
         //return t.GetProperties(BindingFlags.Public | BindingFlags.Instance | BindingFlags.GetProperty);
     }
@@ -72,9 +85,5 @@ public class TableFormatter implements Formatter {
         } catch (IllegalAccessException e) {
             throw new RuntimeException(e);
         }
-    }
-
-    private boolean isCollectionType(Class iff) {
-        return Collection.class.isAssignableFrom(iff);
     }
 }
