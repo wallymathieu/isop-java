@@ -19,7 +19,7 @@ public class MyOptionalController {
         }
     }
     public Function<Param,String> onAction;
-    public MyOptionalController SetOnAction(Function<Param,String> onAction){
+    public MyOptionalController setOnAction(Function<Param, String> onAction){
         this.onAction = onAction;
         return this;
     }

@@ -235,7 +235,7 @@ public class ArgumentParserTest extends Base {
             assertEquals(MyController.class, t);
             return
                     (Object)
-                            new MyOptionalController().SetOnAction((p1) -> "" );
+                            new MyOptionalController().setOnAction((p1) -> "");
         };
         Build build = new Build()
                 .recognizeClass(MyOptionalController.class)
@@ -260,7 +260,10 @@ public class ArgumentParserTest extends Base {
             assertEquals(MyOptionalController.class, t);
             return
                     (Object)
-                            new MyOptionalController().SetOnAction((p1) ->{ parameters.add(p1); return "";} );
+                            new MyOptionalController().setOnAction((p1) -> {
+                                parameters.add(p1);
+                                return "";
+                            });
         };
         ParsedArguments arguments = new Build()
                 .recognizeClass(MyOptionalController.class)
@@ -280,7 +283,10 @@ public class ArgumentParserTest extends Base {
             assertEquals(MyOptionalController.class, t);
             return
                     (Object)
-                            new MyOptionalController().SetOnAction((p1) ->{ parameters.add(p1); return "";} );
+                            new MyOptionalController().setOnAction((p1) -> {
+                                parameters.add(p1);
+                                return "";
+                            });
         };
         ParsedArguments arguments = new Build()
                 .recognizeClass(MyOptionalController.class)
