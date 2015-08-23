@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/jisop.iml" filepath="$PROJECT_DIR$/jisop.iml" />
+      <module fileurl="file://$PROJECT_DIR$/isop.iml" filepath="$PROJECT_DIR$/isop.iml" />
     </modules>
   </component>
 </project>

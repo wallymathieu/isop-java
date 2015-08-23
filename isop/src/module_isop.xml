@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="module_isop" default="compile.module.isop">
+  <dirname property="module.isop.basedir" file="${ant.file.module_isop}"/>
+  
+  <property name="module.jdk.home.isop" value="${project.jdk.home}"/>
+  <property name="module.jdk.bin.isop" value="${project.jdk.bin}"/>
+  <property name="module.jdk.classpath.isop" value="${project.jdk.classpath}"/>
+  
+  <property name="compiler.args.isop" value="-encoding UTF-8 -source 8 ${compiler.args}"/>
+  
+  <property name="isop.output.dir" value="${module.isop.basedir}/../out/production/isop"/>
+  <property name="isop.testoutput.dir" value="${module.isop.basedir}/../out/test/isop"/>
+  
+  <path id="isop.module.bootclasspath">
+    <!-- Paths to be included in compilation bootclasspath -->
+  </path>
+  
+  <path id="isop.module.production.classpath">
+    <path refid="${module.jdk.classpath.isop}"/>
+  </path>
+  
+  <path id="isop.runtime.production.module.classpath">
+    <pathelement location="${isop.output.dir}"/>
+  </path>
+  
+  <path id="isop.module.classpath">
+    <path refid="${module.jdk.classpath.isop}"/>
+    <pathelement location="${isop.output.dir}"/>
+  </path>
+  
+  <path id="isop.runtime.module.classpath">
+    <pathelement location="${isop.testoutput.dir}"/>
+    <pathelement location="${isop.output.dir}"/>
+  </path>
+  
+  
+  <patternset id="excluded.from.module.isop">
+    <patternset refid="ignored.files"/>
+  </patternset>
+  
+  <patternset id="excluded.from.compilation.isop">
+    <patternset refid="excluded.from.module.isop"/>
+  </patternset>
+  
+  <path id="isop.module.sourcepath">
+    <dirset dir="${module.isop.basedir}/../../isop">
+      <include name="src"/>
+    </dirset>
+  </path>
+  
+  
+  <target name="compile.module.isop" depends="compile.module.isop.production,compile.module.isop.tests" description="Compile module isop"/>
+  
+  <target name="compile.module.isop.production" description="Compile module isop; production classes">
+    <mkdir dir="${isop.output.dir}"/>
+    <javac destdir="${isop.output.dir}" debug="${compiler.debug}" nowarn="${compiler.generate.no.warnings}" memorymaximumsize="${compiler.max.memory}" fork="true" executable="${module.jdk.bin.isop}/javac">
+      <compilerarg line="${compiler.args.isop}"/>
+      <bootclasspath refid="isop.module.bootclasspath"/>
+      <classpath refid="isop.module.production.classpath"/>
+      <src refid="isop.module.sourcepath"/>
+      <patternset refid="excluded.from.compilation.isop"/>
+    </javac>
+    
+    <copy todir="${isop.output.dir}">
+      <fileset dir="${module.isop.basedir}">
+        <patternset refid="compiler.resources"/>
+        <type type="file"/>
+      </fileset>
+    </copy>
+  </target>
+  
+  <target name="compile.module.isop.tests" depends="compile.module.isop.production" description="compile module isop; test classes" unless="skip.tests"/>
+  
+  <target name="clean.module.isop" description="cleanup module">
+    <delete dir="${isop.output.dir}"/>
+    <delete dir="${isop.testoutput.dir}"/>
+  </target>
+</project>

@@ -10,6 +10,6 @@ nbbuild/
 dist/
 nbactions.xml
 nb-configuration.xml
-/jisop/nbproject/private/
+/isop/nbproject/private/
 /tests/nbproject/private/
 /target/

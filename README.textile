@@ -1,4 +1,4 @@
-h2. JIsop
+h2. Isop
 
 Port of Isop in java. Isop is the swedish name for hyssop. Like any spice it is intended to give flavor to the development of command line apps in java. 
 
