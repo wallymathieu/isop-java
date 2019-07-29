@@ -16,7 +16,7 @@ h3. Having your own Main
 You're hooking it up by writing something like:
 <pre><code>public static void main(String [] args)
 {
-  new Build()
+  new AppHostBuilder()
         .recognize(MyController.class)
         .parse(args)
         .invoke(System.out);
